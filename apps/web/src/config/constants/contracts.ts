@@ -180,7 +180,7 @@ export default {
     97: DFS[ChainId.BSC_TESTNET].address,
   },
   pair: {
-    56: '0xC96ADD7fd4c46A85a027EA0560a24Ef3e669EC02',
+    56: '0xA5084951430Ec91413B0edE7b4aed8383632bD57',
     97: '0xF375c6D44C92b15584B908d62f13CCE81d82C661',
   },
 
