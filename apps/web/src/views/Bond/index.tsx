@@ -103,7 +103,7 @@ const Bond = () => {
     //   setPreviousCentral(centralAssets)
     // }
     const totalPayout = await bond.totalPayout()
-    setCentral(parseFloat(formatUnits(totalPayout.mul(8))) * marketPriceNumber + 10000)
+    setCentral(parseFloat(formatUnits(totalPayout.mul(8))) * marketPriceNumber + 212515)
 
   })
 
