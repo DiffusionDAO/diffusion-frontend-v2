@@ -158,7 +158,7 @@ const Dashboard = () => {
       .sub(dashboard.advancedUnusedMintAddressDfs)
       .sub(dashboard.elementaryMintAddressDfs)
       .sub(dashboard.advancedMintAddressDfs)
-      .sub(parseEther("436"))
+      .add(parseEther("436"))
 
     dashboard.totalCirculationSupply = dashboard.totalPayout
       .mul(1315)
@@ -166,7 +166,7 @@ const Dashboard = () => {
       .add(parseEther("766"))
 
     if (dashboard.currentCirculationSupply.gt(0)) {
-      dashboard.solitaryReserves = parseFloat(formatUnits(numerator)) / parseFloat(formatUnits(dashboard.currentCirculationSupply))
+      dashboard.solitaryReserves = parseFloat(formatUnits(numerator)) / parseFloat(formatUnits(dashboard.currentCirculationSupply.sub(parseEther("436"))))
       const debtRatio = (parseFloat(formatUnits(dashboard.totalPayout.sub(dashboard.bondUsed))) * 100) /
         parseFloat(formatUnits(dashboard.currentCirculationSupply))
       dashboard.debtRatio = debtRatio
