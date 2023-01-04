@@ -217,12 +217,11 @@ const Bond = () => {
 
         {!isMobile && (
           <OverviewPromptList>
-            <OverviewPromptItem>{t('Invest in bonds and get DFS at a discounted price')}</OverviewPromptItem>
-            <OverviewPromptItem>{t('All funds invested in bonds will be added to the treasury')}</OverviewPromptItem>
-            <OverviewPromptItem>{t('DFS will be fully credited in 10 days after bonds purchase')}</OverviewPromptItem>
+            <OverviewPromptItem>{t('Get DFS at a discounted bond price')}</OverviewPromptItem>
+            <OverviewPromptItem>{t('DFS will be fully released linearly in 10 days after bonds purchase')}</OverviewPromptItem>
             <OverviewPromptItem>
               {t(
-                'Participate in NFT Gachapon even before the actual DFS has been credited into your account after your bonds purchase',
+                'Unused bonds can be used to mint NFT',
               )}
             </OverviewPromptItem>
           </OverviewPromptList>
