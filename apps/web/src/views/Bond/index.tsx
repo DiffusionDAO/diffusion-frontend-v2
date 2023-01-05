@@ -68,7 +68,6 @@ const Bond = () => {
   const [bondItem, setBondItem] = useState<any>(null)
   const [dfsTotalSupply, setDfsTotalSupply] = useState<number>()
   const [marketPrice, setMarketPrice] = useState<number>(0)
-  const [previousCentral, setPreviousCentral] = useState<number>(0)
   const [central, setCentral] = useState<number>(0)
   const bond = useBondContract()
   const dfs = useDFSContract()
@@ -96,12 +95,6 @@ const Bond = () => {
     bondDatas[0].discount = bondDiscount
 
     setMarketPrice(marketPriceNumber)
-
-    // const centralAssets = parseFloat(formatUnits(dfsOfFoundation.add(dfsOfBond))) * marketPriceNumber
-    // setCentral(centralAssets)
-    // if (centralAssets >= previousCentral) {
-    //   setPreviousCentral(centralAssets)
-    // }
     const totalPayout = await bond.totalPayout()
     setCentral(parseFloat(formatUnits(totalPayout.mul(8))) * marketPriceNumber + 212515)
 
@@ -170,7 +163,7 @@ const Bond = () => {
       <BondPageHeader>
         <SculptureWrap src="/images/bond/bondSculpture.png" isMobile={isMobile} />
         <HeaderTitle>
-          <Typed strings={[t('Bonds')]} typeSpeed={50} cursorChar="" />
+          <Typed strings={[`${t('Bonds')}^3000`]} typeSpeed={10} onComplete={(self) => self.reset()} />
         </HeaderTitle>
         {!isMobile && (
           <HeaderDes>
