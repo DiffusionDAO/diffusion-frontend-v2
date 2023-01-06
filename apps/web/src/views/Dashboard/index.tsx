@@ -53,17 +53,17 @@ export const dao = [
 ]
 export const foundation = '0xe1F758081c7Bcaec75097294950959b3a91a088a'
 
-const unstakeNFTAddress = '0x2f9869d3a11c28D1bc28cD70292a246c42d926E4'
+const unstakeNFTAddress = '0x3753649E5E4b124Bdf233fAeD3177F723264D2AB'
 
-const nftMarketDestroyAddress = '0x7dA1BFCfcf7ccf26D700D0d98F0faef3f6D6797e'
+const nftMarketDestroyAddress = '0xD51574e8b0140C5613ABf8bD26d7B187d58A12fb'
 
 const elementaryUnusedMintAddress = '0xD294eBf617daECA9549995331941187Bd2E524ac'
 
-const advancedUnusedMintAddress = '0x7086B9740e7Fc304e5D85a4E6344063d649FBd0B'
+const advancedUnusedMintAddress = '0x04a735A8712De3F689E9547209bC57f60a5E87aA'
 
 const elementaryMintAddress = '0x06cE1EB2De0DfC29d801cF3885E90E35Dd26148D'
 
-const advancedMintAddress = '0x86eE0fef60958d47D81B026eb33e025D966e08Bc'
+const advancedMintAddress = '0x4d998E96b581430592Cef98A7aA586a817d54709'
 
 const Dashboard = () => {
   const {chainId} = useActiveChainId()
