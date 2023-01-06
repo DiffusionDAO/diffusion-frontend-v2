@@ -163,7 +163,7 @@ const Bond = () => {
       <BondPageHeader>
         <SculptureWrap src="/images/bond/bondSculpture.png" isMobile={isMobile} />
         <HeaderTitle>
-          <Typed strings={[`${t('Bonds')}`]} typeSpeed={10} onComplete={(self) => self.reset()} />
+          <div>{t('Bonds')}</div>
         </HeaderTitle>
         {!isMobile && (
           <HeaderDes>
