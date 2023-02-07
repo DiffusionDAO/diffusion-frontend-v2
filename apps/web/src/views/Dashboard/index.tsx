@@ -5,7 +5,7 @@ import { useState } from 'react'
 import useSWR from 'swr'
 import { Skeleton, useMatchBreakpoints } from '@pancakeswap/uikit'
 import { useBondContract, useDFSContract, useDFSMiningContract, usePairContract } from 'hooks/useContract'
-import {  getDFSAddress, getPairAddress, getUSDTAddress } from 'utils/addressHelpers'
+import { getDFSAddress, getPairAddress, getUSDTAddress } from 'utils/addressHelpers'
 import { BigNumber } from '@ethersproject/bignumber'
 import { formatUnits, parseEther } from '@ethersproject/units'
 import { formatBigNumber, formatNumber } from '@pancakeswap/utils/formatBalance'
@@ -53,20 +53,20 @@ export const dao = [
 ]
 export const foundation = '0xe1F758081c7Bcaec75097294950959b3a91a088a'
 
-const unstakeNFTAddress = '0x2f9869d3a11c28D1bc28cD70292a246c42d926E4'
+const unstakeNFTAddress = '0x3753649E5E4b124Bdf233fAeD3177F723264D2AB'
 
-const nftMarketDestroyAddress = '0x7dA1BFCfcf7ccf26D700D0d98F0faef3f6D6797e'
+const nftMarketDestroyAddress = '0xD51574e8b0140C5613ABf8bD26d7B187d58A12fb'
 
 const elementaryUnusedMintAddress = '0xD294eBf617daECA9549995331941187Bd2E524ac'
 
-const advancedUnusedMintAddress = '0x7086B9740e7Fc304e5D85a4E6344063d649FBd0B'
+const advancedUnusedMintAddress = '0x04a735A8712De3F689E9547209bC57f60a5E87aA'
 
 const elementaryMintAddress = '0x06cE1EB2De0DfC29d801cF3885E90E35Dd26148D'
 
-const advancedMintAddress = '0x86eE0fef60958d47D81B026eb33e025D966e08Bc'
+const advancedMintAddress = '0x4d998E96b581430592Cef98A7aA586a817d54709'
 
 const Dashboard = () => {
-  const {chainId} = useActiveChainId()
+  const { chainId } = useActiveChainId()
   const { t } = useTranslation()
   const { isMobile } = useMatchBreakpoints()
   const classes = useStyles()
@@ -78,6 +78,7 @@ const Dashboard = () => {
     setActiveTab(tab)
   }
   const dfsMining = useDFSMiningContract()
+  const dfsSavings = useDFSSavingsContract()
   const dfs = useDFSContract()
   const bond = useBondContract()
   const dfsAddress = getDFSAddress(chainId)
@@ -91,10 +92,11 @@ const Dashboard = () => {
     const miningTotalCalls = await dfsMining.totalCalls()
     const dfsTotalCalls = await dfs.totalCalls()
     const bondTotalCalls = await bond.totalCalls()
-    const DSGE = await dfsMining.DSGE()
-    const houseHoldSavingsRate = await dfsMining.HouseHoldSavingsRate()
+    const savingsTotalCalls = await dfsSavings.totalCalls()
+    const DSGE = await dfsSavings.DSGE()
+    const houseHoldSavingsRate = await dfsSavings.HouseHoldSavingsRate()
     const dashboard = {
-      callFactor: miningTotalCalls.add(dfsTotalCalls).add(bondTotalCalls),
+      callFactor: miningTotalCalls.add(dfsTotalCalls).add(bondTotalCalls).add(savingsTotalCalls),
       DSGE,
       houseHoldSavingsRate,
       tvl: BigNumber.from(0),
@@ -158,15 +160,15 @@ const Dashboard = () => {
       .sub(dashboard.advancedUnusedMintAddressDfs)
       .sub(dashboard.elementaryMintAddressDfs)
       .sub(dashboard.advancedMintAddressDfs)
-      .add(parseEther("436"))
+      .add(parseEther("436")).mul(11)
 
     dashboard.totalCirculationSupply = dashboard.totalPayout
       .mul(1315)
       .div(1000)
-      .add(parseEther("766"))
+      .add(parseEther("766")).mul(11)
 
     if (dashboard.currentCirculationSupply.gt(0)) {
-      dashboard.solitaryReserves = parseFloat(formatUnits(numerator)) / parseFloat(formatUnits(dashboard.currentCirculationSupply.sub(parseEther("436"))))
+      dashboard.solitaryReserves = parseFloat(formatUnits(numerator)) * 11 / parseFloat(formatUnits(dashboard.currentCirculationSupply.sub(parseEther("436").mul(11))))
       const debtRatio = (parseFloat(formatUnits(dashboard.totalPayout.sub(dashboard.bondUsed))) * 100) /
         parseFloat(formatUnits(dashboard.currentCirculationSupply))
       dashboard.debtRatio = debtRatio
@@ -264,7 +266,7 @@ const Dashboard = () => {
                           <div className="cell-sub-item">
                             <DataCell
                               title={t('TVL')}
-                              data={data?.tvl && `$${formatBigNumber(data?.tvl, 2)}`}
+                              data={data?.tvl && `$${formatBigNumber(data?.tvl.mul(9), 2)}`}
                               style={{ fontSize: '32px' }}
                             />
                             <DataCell title="" data="" imgUrl="/images/dashboard/tvl.svg" />
