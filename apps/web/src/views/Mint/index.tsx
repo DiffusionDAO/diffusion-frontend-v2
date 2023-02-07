@@ -52,13 +52,21 @@ const Mint = () => {
   const [InsufficientBalanceVisible, setInsufficientBalanceModalVisible] = useState<boolean>(false)
   const [playMintBoxModalVisible, setPlayBindBoxModalVisible] = useState<boolean>(false)
   const [gifUrl, setGifUrl] = useState<string>('/images/mint/ordinary.gif')
+
   const [seniorCount, setSeniorCount] = useState<number>(1)
   const [maxSenior, setMaxSenior] = useState<number>(1)
+
   const [ordinaryCount, setOrdinaryCount] = useState<number>(1)
   const [maxOrdinary, setMaxOrdinary] = useState<number>(1)
+
+  const [tryCount, setTryCount] = useState<number>(1)
+  const [maxTry, setMaxTry] = useState<number>(1)
+
   const [mintNFTData, setMintNFTData] = useState<any>([])
   const [balance, setBalance] = useState(BigNumber.from(0))
   const [bondUnused, setBondPayout] = useState<BigNumber>(BigNumber.from(0))
+  const [tryCost, setTryCost] = useState<BigNumber>(BigNumber.from(0))
+
   const [ordinaryPrice, setOneCost] = useState<BigNumber>(BigNumber.from(0))
   const [seniorPrice, setTwoCost] = useState<BigNumber>(BigNumber.from(0))
   const [bondUsed, setBondUsed] = useState<BigNumber>(BigNumber.from(0))
@@ -66,6 +74,7 @@ const Mint = () => {
   const socialNFT = useSocialNftContract()
 
   useEffect(() => {
+    socialNFT.tryCost().then((oneCost) => setTryCost(oneCost))
     socialNFT.elementaryCost().then((oneCost) => setOneCost(oneCost))
     socialNFT.advancedCost().then((twoCost) => setTwoCost(twoCost))
   }, [account, balance])
@@ -97,6 +106,11 @@ const Mint = () => {
         const unusedCount = bondUnused.gt(0) ? bondUnused.div(seniorPrice).toNumber() : 0
         setMaxSenior(Math.max(balanceCount, unusedCount))
       }
+      if (tryCost.gt(0)) {
+        const balanceCount = balance.gt(0) ? balance.div(tryCost).toNumber() : 0
+        const unusedCount = bondUnused.gt(0) ? bondUnused.div(tryCost).toNumber() : 0
+        setMaxTry(Math.max(balanceCount, unusedCount))
+      }
     }
   }, [account, mintBoxModalVisible, ordinaryPrice, seniorPrice])
 
@@ -125,22 +139,41 @@ const Mint = () => {
         setInsufficientBalanceModalVisible(true)
         return
       }
+    } else if (type === "try") {
+      if (useBond) {
+        if (bondUnused.lt(tryCost.mul(tryCount))) {
+          setInsufficientBalanceModalVisible(true)
+          return
+        }
+      } else if (balance.lt(tryCost.mul(tryCount))) {
+        setInsufficientBalanceModalVisible(true)
+        return
+      }
     }
 
     setGifUrl(`/images/mint/${type}.gif`)
     setPlayBindBoxModalVisible(true)
 
-    const gasEstimation =
-      type === 'ordinary'
-        ? await estimateGas(socialNFT, 'mintElementary', [ordinaryCount, useBond], {}, 1500)
-        : await estimateGas(socialNFT, 'mintAdvanced', [seniorCount, useBond], {}, 1500)
+    let gasEstimation:BigNumber = BigNumber.from(0)
+    if (type === 'ordinary') {
+      gasEstimation = await estimateGas(socialNFT, 'mintElementary', [ordinaryCount, useBond], {}, 1500)
+    } else if (type === 'senior') {
+      gasEstimation = await estimateGas(socialNFT, 'mintAdvanced', [seniorCount, useBond], {}, 1500)
+    } else if (type === 'try') {
+      gasEstimation = await estimateGas(socialNFT, 'mintAdvanced', [tryCount, useBond], {}, 1500)
+    }
+      
     console.log('gasEstimation:', gasEstimation.toNumber())
     try {
       // eslint-disable-next-line react-hooks/rules-of-hooks
-      const res =
-        type === 'ordinary'
-          ? await socialNFT.mintElementary(ordinaryCount, useBond, { gasLimit: gasEstimation })
-          : await socialNFT.mintAdvanced(seniorCount, useBond, { gasLimit: gasEstimation })
+      let res
+      if (type === 'ordinary') {
+        res = await socialNFT.mintElementary(ordinaryCount, useBond, { gasLimit: gasEstimation })
+      } else if (type === 'senior') {
+        res =await socialNFT.mintAdvanced(seniorCount, useBond, { gasLimit: gasEstimation })
+      } else if (type === 'try') {
+        res = await socialNFT.mintTry(tryCount, useBond, { gasLimit: gasEstimation })
+      }
       const receipt = await res.wait()
       const { logs } = receipt
       // eslint-disable-next-line prefer-const
@@ -383,6 +416,90 @@ const Mint = () => {
               </ContentWrap>
             </DrawBlindBoxItem>
           </Grid>
+          {/* <Grid item lg={4} md={4} sm={12} xs={12}>
+            <DrawBlindBoxItem className="item2">
+              <DrawBlindBoxImgWrap className="item2">
+                <BoxLeftAskImg src="/images/mint/purpleLeftAsk.png" />
+                <BoxRightAskImg src="/images/mint/purpleRightAsk.png" />
+              </DrawBlindBoxImgWrap>
+              <ContentWrap>
+                <DalaCardList>
+                  <DalaCardListTitle>{t('Experience Mint')}</DalaCardListTitle>
+                  <DataCell
+                    label={t('Price')}
+                    value={`${formatBigNumber(tryCost, 2)} DFS`}
+                    valueDivStyle={{ fontSize: '14px' }}
+                    position="horizontal"
+                  />
+                </DalaCardList>
+                <CountWrap>
+                  <AvailableCount>
+                    {t('Balance')}: {balance ? formatBigNumber(balance, 2) : 0} DFS
+                  </AvailableCount>
+                  <UnWithdrawCount>
+                    {t('Unused')}: {formatBigNumber(bondUnused, 2)} DFS
+                  </UnWithdrawCount>
+                </CountWrap>
+                <ActionWrap>
+                  <ActionLeft>
+                    <DrawBlindBoxTextBtn
+                      className="purpleBtn"
+                      onClick={() => {
+                        if (tryCount > 1) setTryCount(tryCount - 1)
+                      }}
+                    >
+                      -
+                    </DrawBlindBoxTextBtn>
+                    <CountInput
+                      value={tryCount}
+                      ismobile={isMobile.toString()}
+                      min={1}
+                      controls={false}
+                      onChange={(val) => setTryCount(Number(val))}
+                    />
+                    <DrawBlindBoxTextBtn
+                      className="purpleBtn"
+                      onClick={() => {
+                        if (maxTry > 1 && tryCount < maxTry) setTryCount(tryCount + 1)
+                      }}
+                    >
+                      +
+                    </DrawBlindBoxTextBtn>
+                    <DrawBlindBoxTextBtn
+                      className="purpleBtn"
+                      onClick={() => {
+                        setTryCount(maxTry)
+                      }}
+                    >
+                      {t('Max')}
+                    </DrawBlindBoxTextBtn>
+                  </ActionLeft>
+                </ActionWrap>
+                <DrawBlindBoxPrimaryBtn
+                  className="purpleBtn"
+                  onClick={async () => {
+                    const allowance = await DFS.allowance(account, socialNFT.address)
+                    if (allowance.eq(0)) {
+                      const receipt = await DFS.approve(socialNFT.address, MaxUint256)
+                      await receipt.wait()
+                    }
+                    mint('try', false)
+                  }}
+                >
+                  {t('Balance Mint')}
+                </DrawBlindBoxPrimaryBtn>
+                <DrawBlindBoxPrimaryBtn
+                  className="purpleBtn"
+                  onClick={async () => {
+                    mint('try', true)
+                  }}
+                  style={{ marginTop: '20px' }}
+                >
+                  {t('Unsed Mint')}
+                </DrawBlindBoxPrimaryBtn>
+              </ContentWrap>
+            </DrawBlindBoxItem>
+          </Grid> */}
         </Grid>
       </DrawBlindBoxList>
       {playMintBoxModalVisible ? <PlayBindBoxModal onClose={closePlayBindBoxModal} gifUrl={gifUrl} /> : null}

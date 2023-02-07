@@ -148,6 +148,9 @@ export const getBondAddress = (chainId?: number) => {
 export const getMiningAddress = (chainId?: number) => {
   return getAddress(addresses.dfsMining,chainId)
 }
+export const getSavingsAddress = (chainId?: number) => {
+  return getAddress(addresses.dfsSavings,chainId)
+}
 export const getIDOAddress = (chainId?: number) => {
   return getAddress(addresses.pdfs,chainId)
 }

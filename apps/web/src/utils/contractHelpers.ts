@@ -52,6 +52,7 @@ import {
   getDFSAddress,
   getPDFSAddress,
   getMiningAddress,
+  getSavingsAddress,
   getBondAddress,
   getHBondAddress,
   getHDFSAddress,
@@ -172,6 +173,7 @@ import starlightAbi from 'config/abi/starlight.json'
 import duffionIDOAbi from 'config/abi/diffusionIDO.json'
 import aggregatorAbi from 'config/abi/nftDatabase.json'
 import mineAbi from 'config/abi/dfsMining.json'
+import savingsAbi from 'config/abi/dfsSavings.json'
 import dfsBond from 'config/abi/dfsBond.json'
 import hbond from 'config/abi/hbond.json'
 import hdfs from 'config/abi/hdfs.json'
@@ -451,6 +453,9 @@ export const getBondContract = (signer?: Signer | Provider, chainId?: number) =>
 }
 export const getMiningContract = (signer?: Signer | Provider, chainId?: number) => {
   return getContract({ abi: mineAbi, address: getMiningAddress(chainId), signer })
+}
+export const getSavingsContract = (signer?: Signer | Provider, chainId?: number) => {
+  return getContract({ abi: savingsAbi, address: getSavingsAddress(chainId), signer })
 }
 export const getIDOContract = (signer?: Signer | Provider, chainId?: number) => {
   return getContract({ abi: duffionIDOAbi, address: getIDOAddress(chainId), signer })

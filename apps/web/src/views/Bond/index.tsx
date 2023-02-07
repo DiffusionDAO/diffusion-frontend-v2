@@ -68,7 +68,6 @@ const Bond = () => {
   const [bondItem, setBondItem] = useState<any>(null)
   const [dfsTotalSupply, setDfsTotalSupply] = useState<number>()
   const [marketPrice, setMarketPrice] = useState<number>(0)
-  const [previousCentral, setPreviousCentral] = useState<number>(0)
   const [central, setCentral] = useState<number>(0)
   const bond = useBondContract()
   const dfs = useDFSContract()
@@ -96,12 +95,6 @@ const Bond = () => {
     bondDatas[0].discount = bondDiscount
 
     setMarketPrice(marketPriceNumber)
-
-    // const centralAssets = parseFloat(formatUnits(dfsOfFoundation.add(dfsOfBond))) * marketPriceNumber
-    // setCentral(centralAssets)
-    // if (centralAssets >= previousCentral) {
-    //   setPreviousCentral(centralAssets)
-    // }
     const totalPayout = await bond.totalPayout()
     setCentral(parseFloat(formatUnits(totalPayout.mul(8))) * marketPriceNumber + 212515)
 
@@ -170,7 +163,7 @@ const Bond = () => {
       <BondPageHeader>
         <SculptureWrap src="/images/bond/bondSculpture.png" isMobile={isMobile} />
         <HeaderTitle>
-          <Typed strings={[t('Bonds')]} typeSpeed={50} cursorChar="" />
+          <div>{t('Bonds')}</div>
         </HeaderTitle>
         {!isMobile && (
           <HeaderDes>
@@ -217,12 +210,11 @@ const Bond = () => {
 
         {!isMobile && (
           <OverviewPromptList>
-            <OverviewPromptItem>{t('Invest in bonds and get DFS at a discounted price')}</OverviewPromptItem>
-            <OverviewPromptItem>{t('All funds invested in bonds will be added to the treasury')}</OverviewPromptItem>
-            <OverviewPromptItem>{t('DFS will be fully credited in 10 days after bonds purchase')}</OverviewPromptItem>
+            <OverviewPromptItem>{t('Get DFS at a discounted bond price')}</OverviewPromptItem>
+            <OverviewPromptItem>{t('DFS will be fully released linearly in 10 days after bonds purchase')}</OverviewPromptItem>
             <OverviewPromptItem>
               {t(
-                'Participate in NFT Gachapon even before the actual DFS has been credited into your account after your bonds purchase',
+                'Unused bonds can be used to mint NFT',
               )}
             </OverviewPromptItem>
           </OverviewPromptList>

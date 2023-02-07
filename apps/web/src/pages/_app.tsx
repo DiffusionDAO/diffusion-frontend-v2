@@ -20,7 +20,7 @@ import { persistor, useStore } from 'state'
 import { usePollBlockNumber } from 'state/block/hooks'
 import { useRouter } from 'next/router'
 import { useWeb3React } from '@pancakeswap/wagmi'
-import { useDFSMiningContract } from 'hooks/useContract'
+import { useDFSMiningContract, useDFSSavingsContract } from 'hooks/useContract'
 import NotFound from 'views/NotFound'
 import useSWR from 'swr'
 
@@ -123,9 +123,9 @@ const ProductionErrorBoundary = process.env.NODE_ENV === 'production' ? SentryEr
 const App = ({ Component, pageProps }: AppPropsWithLayout) => {
   const router = useRouter()
   const { account } = useWeb3React()
-  const dfsMining = useDFSMiningContract()
+  const dfsSavings = useDFSSavingsContract()
   const {data, status} = useSWR("AppGetPrivateList",async()=>{
-    const whitelist = await dfsMining.getPrivateWhitelist()
+    const whitelist = await dfsSavings.getPrivateWhitelist()
     return whitelist
   })
   if (router.pathname === '/private' && !data.includes(account)) {

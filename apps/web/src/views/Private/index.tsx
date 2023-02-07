@@ -12,6 +12,7 @@ import {
   useBondContract,
   useDFSContract,
   useDFSMiningContract,
+  useDFSSavingsContract,
   useERC20,
   useHBondContract,
   useHDFSContract,
@@ -83,6 +84,7 @@ const Private = () => {
   const [stakers, setStakers] = useState<string[]>([])
 
   const dfsMining = useDFSMiningContract()
+  const dfsSavings = useDFSSavingsContract()
   const bond = useBondContract()
   const dfs = useDFSContract()
   const hdfs = useHDFSContract()
@@ -129,7 +131,7 @@ const Private = () => {
       level6Staked: await dfsMining.level6Staked(),
       totalPayout: await bond.totalPayout(),
       withdrawedSavingReward: await dfsMining.withdrawedSavingReward(),
-      withdrawedSocialReward: await dfsMining.withdrawedSocialReward(),
+      withdrawedSocialReward: await dfsSavings.withdrawedSocialReward(),
       dfsRewardBalance: await dfs.balanceOf(bond.address),
     }
     const buyers = await bond.getBuyers()
@@ -150,13 +152,16 @@ const Private = () => {
       stakers.map(async (staker) => {
         count.totalPendingSocialReward = count.totalPendingSocialReward.add(await dfsMining.pendingSocialReward(staker))
         count.totalPendingSavingInterest = count.totalPendingSavingInterest.add(
-          await dfsMining.pendingSavingInterest(staker),
+          await dfsSavings.pendingSavingInterest(staker),
         )
 
         const referralStake = await dfsMining.addressToReferral(staker)
         const level = referralStake.level
         count.totalSocialReward = count.totalSocialReward.add(referralStake?.socialReward)
-        count.totalSavingInterest = count.totalSavingInterest.add(referralStake?.savingInterest)
+
+        const referralSavings = await dfsSavings.addressToReferral(staker)
+        count.totalSavingInterest = count.totalSavingInterest.add(referralSavings?.savingInterest)
+
         switch (level.toNumber()) {
           case 0:
             return count.s0++
@@ -178,11 +183,11 @@ const Private = () => {
       }),
     )
     setDfsBalance(await dfs.balanceOf(account))
-
-    setSavingInterestEpochLength(await dfsMining.savingInterestEpochLength())
-
     setTotalPower(await dfsMining.totalPower())
-    setTotalStakedSavings(await dfsMining.totalStakedSavings())
+
+    setSavingInterestEpochLength(await dfsSavings.savingInterestEpochLength())
+    setTotalStakedSavings(await dfsSavings.totalStakedSavings())
+
 
     return count
   }

@@ -27,23 +27,10 @@
   },
   {
     "inputs": [],
-    "name": "DSGE",
-    "outputs": [
-      {
-        "internalType": "string",
-        "name": "",
-        "type": "string"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
     "name": "Dfs",
     "outputs": [
       {
-        "internalType": "contract IDFS",
+        "internalType": "contract IERC20",
         "name": "",
         "type": "address"
       }
@@ -52,13 +39,19 @@
     "type": "function"
   },
   {
-    "inputs": [],
-    "name": "HouseHoldSavingsRate",
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "name": "SPOSRewardRate",
     "outputs": [
       {
-        "internalType": "string",
+        "internalType": "uint32",
         "name": "",
-        "type": "string"
+        "type": "uint32"
       }
     ],
     "stateMutability": "view",
@@ -105,24 +98,33 @@
         "type": "uint256"
       },
       {
-        "internalType": "uint256",
+        "internalType": "uint32",
         "name": "lastSocialRewardWithdraw",
-        "type": "uint256"
-      },
-      {
-        "internalType": "uint256",
-        "name": "stakedSavings",
-        "type": "uint256"
-      },
-      {
-        "internalType": "uint256",
-        "name": "savingInterest",
-        "type": "uint256"
+        "type": "uint32"
       },
       {
         "internalType": "uint32",
-        "name": "savingInterestEndTime",
+        "name": "powerUnder",
         "type": "uint32"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "name": "admin",
+    "outputs": [
+      {
+        "internalType": "bool",
+        "name": "",
+        "type": "bool"
       }
     ],
     "stateMutability": "view",
@@ -167,13 +169,6 @@
   },
   {
     "inputs": [],
-    "name": "distributeSavingInterest",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [],
     "name": "distributeSocialReward",
     "outputs": [],
     "stateMutability": "nonpayable",
@@ -188,19 +183,6 @@
       }
     ],
     "name": "getPowerRewardContributors",
-    "outputs": [
-      {
-        "internalType": "address[]",
-        "name": "",
-        "type": "address[]"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "getPrivateWhitelist",
     "outputs": [
       {
         "internalType": "address[]",
@@ -257,25 +239,6 @@
       }
     ],
     "name": "includePowerRewardContributors",
-    "outputs": [
-      {
-        "internalType": "bool",
-        "name": "",
-        "type": "bool"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "",
-        "type": "address"
-      }
-    ],
-    "name": "includePrivateWhitelist",
     "outputs": [
       {
         "internalType": "bool",
@@ -407,9 +370,9 @@
     "name": "levelToPower",
     "outputs": [
       {
-        "internalType": "uint256",
+        "internalType": "uint32",
         "name": "",
-        "type": "uint256"
+        "type": "uint32"
       }
     ],
     "stateMutability": "view",
@@ -423,25 +386,6 @@
         "internalType": "address",
         "name": "",
         "type": "address"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "_user",
-        "type": "address"
-      }
-    ],
-    "name": "pendingSavingInterest",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
       }
     ],
     "stateMutability": "view",
@@ -547,68 +491,11 @@
     "inputs": [
       {
         "internalType": "address",
-        "name": "",
+        "name": "_admin",
         "type": "address"
       }
     ],
-    "name": "powerUnder",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "name": "privateWhitelist",
-    "outputs": [
-      {
-        "internalType": "address",
-        "name": "",
-        "type": "address"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "",
-        "type": "address"
-      }
-    ],
-    "name": "privateWhitelistIndex",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "_addr",
-        "type": "address"
-      }
-    ],
-    "name": "removePrivateWhitelist",
+    "name": "removeAdmin",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
@@ -623,58 +510,6 @@
   {
     "inputs": [],
     "name": "s0UpgradeNeed",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "s8RevenueRate",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "savingInterestDenominator",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "savingInterestEpochLength",
-    "outputs": [
-      {
-        "internalType": "uint32",
-        "name": "",
-        "type": "uint32"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "savingRewardInterest",
     "outputs": [
       {
         "internalType": "uint256",
@@ -702,11 +537,16 @@
     "inputs": [
       {
         "internalType": "address",
-        "name": "_bond",
+        "name": "operator",
         "type": "address"
+      },
+      {
+        "internalType": "bool",
+        "name": "_approved",
+        "type": "bool"
       }
     ],
-    "name": "setBondAddress",
+    "name": "setApprovalForAllAdmin",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
@@ -714,12 +554,12 @@
   {
     "inputs": [
       {
-        "internalType": "string",
-        "name": "_dsge",
-        "type": "string"
+        "internalType": "address",
+        "name": "_bond",
+        "type": "address"
       }
     ],
-    "name": "setDSEG",
+    "name": "setBondAddress",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
@@ -733,19 +573,6 @@
       }
     ],
     "name": "setDfsAddress",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "string",
-        "name": "rate",
-        "type": "string"
-      }
-    ],
-    "name": "setHouseHoldSavingsRate",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
@@ -874,12 +701,24 @@
   {
     "inputs": [
       {
-        "internalType": "address[]",
-        "name": "_list",
-        "type": "address[]"
+        "components": [
+          {
+            "internalType": "address",
+            "name": "self",
+            "type": "address"
+          },
+          {
+            "internalType": "uint32",
+            "name": "power",
+            "type": "uint32"
+          }
+        ],
+        "internalType": "struct DFSMining.PowerUnder[]",
+        "name": "_powerUnder",
+        "type": "tuple[]"
       }
     ],
-    "name": "setPrivateWhitelist",
+    "name": "setPowerUnder",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
@@ -919,28 +758,18 @@
             "type": "uint256"
           },
           {
-            "internalType": "uint256",
+            "internalType": "uint32",
             "name": "lastSocialRewardWithdraw",
-            "type": "uint256"
-          },
-          {
-            "internalType": "uint256",
-            "name": "stakedSavings",
-            "type": "uint256"
-          },
-          {
-            "internalType": "uint256",
-            "name": "savingInterest",
-            "type": "uint256"
+            "type": "uint32"
           },
           {
             "internalType": "uint32",
-            "name": "savingInterestEndTime",
+            "name": "powerUnder",
             "type": "uint32"
           }
         ],
         "internalType": "struct DFSMining.Referral[]",
-        "name": "referral",
+        "name": "referrals",
         "type": "tuple[]"
       }
     ],
@@ -965,51 +794,12 @@
   {
     "inputs": [
       {
-        "internalType": "uint256",
+        "internalType": "uint32[]",
         "name": "_rate",
-        "type": "uint256"
+        "type": "uint32[]"
       }
     ],
-    "name": "setS8RevenueRate",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "uint256",
-        "name": "_denominator",
-        "type": "uint256"
-      }
-    ],
-    "name": "setSavingInterestDenominator",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "uint32",
-        "name": "_length",
-        "type": "uint32"
-      }
-    ],
-    "name": "setSavingInterestEpochLength",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "uint256",
-        "name": "_interest",
-        "type": "uint256"
-      }
-    ],
-    "name": "setSavingRewardInterest",
+    "name": "setSPOSRate",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
@@ -1023,19 +813,6 @@
       }
     ],
     "name": "setSocialNFT",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "uint256",
-        "name": "_denominator",
-        "type": "uint256"
-      }
-    ],
-    "name": "setSocialRewardDenominator",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
@@ -1114,19 +891,6 @@
     "inputs": [
       {
         "internalType": "uint256",
-        "name": "_totalStakedSavings",
-        "type": "uint256"
-      }
-    ],
-    "name": "setTotalStakedSavings",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "uint256",
         "name": "_calls",
         "type": "uint256"
       }
@@ -1165,38 +929,12 @@
   {
     "inputs": [
       {
-        "internalType": "uint256",
-        "name": "_denominator",
-        "type": "uint256"
-      }
-    ],
-    "name": "setUnstakeFeeDenominator",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
         "internalType": "address",
         "name": "_unstakeNFTAddress",
         "type": "address"
       }
     ],
     "name": "setUnstakeNFTAddress",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "uint256",
-        "name": "_withdrawedSavingReward",
-        "type": "uint256"
-      }
-    ],
-    "name": "setWithdrawedSavingReward",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
@@ -1262,19 +1000,6 @@
       }
     ],
     "name": "stakeNFT",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "uint256",
-        "name": "_amount",
-        "type": "uint256"
-      }
-    ],
-    "name": "stakeSavings",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
@@ -1435,19 +1160,6 @@
     "type": "function"
   },
   {
-    "inputs": [],
-    "name": "totalStakedSavings",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
     "inputs": [
       {
         "internalType": "address",
@@ -1513,19 +1225,6 @@
     "type": "function"
   },
   {
-    "inputs": [
-      {
-        "internalType": "uint256",
-        "name": "_amount",
-        "type": "uint256"
-      }
-    ],
-    "name": "unstakeSavings",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
     "inputs": [],
     "name": "updatePool",
     "outputs": [],
@@ -1563,19 +1262,6 @@
     "name": "withdrawSocialReward",
     "outputs": [],
     "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "withdrawedSavingReward",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "stateMutability": "view",
     "type": "function"
   },
   {
