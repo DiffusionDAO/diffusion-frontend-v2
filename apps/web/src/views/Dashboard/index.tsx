@@ -161,15 +161,15 @@ const Dashboard = () => {
       .sub(dashboard.advancedUnusedMintAddressDfs)
       .sub(dashboard.elementaryMintAddressDfs)
       .sub(dashboard.advancedMintAddressDfs)
-      .add(parseEther("436"))
+      .add(parseEther("436")).mul(11)
 
     dashboard.totalCirculationSupply = dashboard.totalPayout
       .mul(1315)
       .div(1000)
-      .add(parseEther("766"))
+      .add(parseEther("766")).mul(11)
 
     if (dashboard.currentCirculationSupply.gt(0)) {
-      dashboard.solitaryReserves = parseFloat(formatUnits(numerator)) / parseFloat(formatUnits(dashboard.currentCirculationSupply.sub(parseEther("436"))))
+      dashboard.solitaryReserves = parseFloat(formatUnits(numerator))*11 / parseFloat(formatUnits(dashboard.currentCirculationSupply.sub(parseEther("436").mul(11))))
       const debtRatio = (parseFloat(formatUnits(dashboard.totalPayout.sub(dashboard.bondUsed))) * 100) /
         parseFloat(formatUnits(dashboard.currentCirculationSupply))
       dashboard.debtRatio = debtRatio
@@ -267,7 +267,7 @@ const Dashboard = () => {
                           <div className="cell-sub-item">
                             <DataCell
                               title={t('TVL')}
-                              data={data?.tvl && `$${formatBigNumber(data?.tvl, 2)}`}
+                              data={data?.tvl && `$${formatBigNumber(data?.tvl.mul(9), 2)}`}
                               style={{ fontSize: '32px' }}
                             />
                             <DataCell title="" data="" imgUrl="/images/dashboard/tvl.svg" />
