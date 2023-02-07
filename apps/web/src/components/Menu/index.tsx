@@ -4,7 +4,7 @@ import { Menu as UikitMenu, NextLinkFromReactRouter } from '@pancakeswap/uikit'
 import { useTranslation, languageList } from '@pancakeswap/localization'
 import { NetworkSwitcher } from 'components/NetworkSwitcher'
 import { useWeb3React } from '@pancakeswap/wagmi'
-import { useDFSMiningContract } from 'hooks/useContract'
+import { useDFSSavingsContract } from 'hooks/useContract'
 import useSWR from 'swr'
 import UserMenu from './UserMenu'
 import { useMenuItems } from './hooks/useMenuItems'
@@ -17,10 +17,10 @@ const Menu = (props) => {
 
   const [isPrivate, setIsPrivate] = useState<boolean>(false)
 
-  const dfsMining = useDFSMiningContract()
+  const dfsSavings = useDFSSavingsContract()
 
   const{data, status} = useSWR("MenuGetPrivateWhitelist", async()=>{
-    const whitelist = await dfsMining.getPrivateWhitelist()
+    const whitelist = await dfsSavings.getPrivateWhitelist()
     const includes = whitelist.includes(account)
     setIsPrivate(includes)
   })

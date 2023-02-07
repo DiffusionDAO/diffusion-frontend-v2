@@ -4,7 +4,7 @@ import { makeStyles } from '@material-ui/core/styles'
 import { useState } from 'react'
 import useSWR from 'swr'
 import { Skeleton, useMatchBreakpoints } from '@pancakeswap/uikit'
-import { useBondContract, useDFSContract, useDFSMiningContract, usePairContract } from 'hooks/useContract'
+import { useBondContract, useDFSContract, useDFSMiningContract, useDFSSavingsContract, usePairContract } from 'hooks/useContract'
 import {  getDFSAddress, getPairAddress, getUSDTAddress } from 'utils/addressHelpers'
 import { BigNumber } from '@ethersproject/bignumber'
 import { formatUnits, parseEther } from '@ethersproject/units'
@@ -78,6 +78,7 @@ const Dashboard = () => {
     setActiveTab(tab)
   }
   const dfsMining = useDFSMiningContract()
+  const dfsSavings = useDFSSavingsContract()
   const dfs = useDFSContract()
   const bond = useBondContract()
   const dfsAddress = getDFSAddress(chainId)
@@ -88,13 +89,15 @@ const Dashboard = () => {
     const [numerator, denominator] = usdtAddress.toLowerCase() < dfsAddress.toLowerCase() ? [reserves[0], reserves[1]] : [reserves[1], reserves[0]]
     const marketPrice = parseFloat(formatUnits(numerator)) / parseFloat(formatUnits(denominator))
 
+    const DSGE = await dfsSavings.DSGE()
+    const houseHoldSavingsRate = await dfsSavings.HouseHoldSavingsRate()
     const miningTotalCalls = await dfsMining.totalCalls()
     const dfsTotalCalls = await dfs.totalCalls()
     const bondTotalCalls = await bond.totalCalls()
-    const DSGE = await dfsMining.DSGE()
-    const houseHoldSavingsRate = await dfsMining.HouseHoldSavingsRate()
+    const savingsTotalCalls = await dfsSavings.totalCalls()
+
     const dashboard = {
-      callFactor: miningTotalCalls.add(dfsTotalCalls).add(bondTotalCalls),
+      callFactor: miningTotalCalls.add(dfsTotalCalls).add(bondTotalCalls).add(savingsTotalCalls),
       DSGE,
       houseHoldSavingsRate,
       tvl: BigNumber.from(0),
@@ -111,7 +114,7 @@ const Dashboard = () => {
       unstakeNFTDFS: await dfs.balanceOf(unstakeNFTAddress),
       nftMarketDestroyedDFS: await dfs.balanceOf(nftMarketDestroyAddress),
       withdrawedSocialReward: await dfsMining.withdrawedSocialReward(),
-      withdrawedSavingReward: await dfsMining.withdrawedSavingReward(),
+      withdrawedSavingReward: await dfsSavings.withdrawedSavingReward(),
       bondUsed: BigNumber.from(0),
       bondRewardWithdrawed: BigNumber.from(0),
       solitaryReserves: 0,

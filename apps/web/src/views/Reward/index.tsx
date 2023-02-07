@@ -9,11 +9,11 @@ import 'swiper/css'
 import 'swiper/css/navigation'
 import { useTranslation } from '@pancakeswap/localization'
 import { useRouter } from 'next/router'
-import { useBondContract, useDFSContract, useDFSMiningContract } from 'hooks/useContract'
+import { useBondContract, useDFSContract, useDFSMiningContract, useDFSSavingsContract } from 'hooks/useContract'
 import { BigNumber } from '@ethersproject/bignumber'
 import { useSWRContract, useSWRMulticall } from 'hooks/useSWRContract'
 import { MaxUint256 } from '@ethersproject/constants'
-import { getBondAddress, getMiningAddress } from 'utils/addressHelpers'
+import { getBondAddress, getMiningAddress, getSavingsAddress } from 'utils/addressHelpers'
 import { formatUnits, parseUnits } from '@ethersproject/units'
 import { formatBigNumber, formatBigNumberToFixed, formatNumber } from '@pancakeswap/utils/formatBalance'
 import { shorten } from 'helpers'
@@ -82,10 +82,6 @@ interface Referral {
   socialReward: BigNumber
   socialRewardLocked: BigNumber
   lastSocialRewardWithdraw: BigNumber
-  savings: BigNumber
-  stakedSavings: BigNumber
-  lastSavingsWithdraw: BigNumber
-  savingInterestEndTime: number
 }
 
 const Reward = () => {
@@ -124,10 +120,11 @@ const Reward = () => {
 
   const { isMobile } = useMatchBreakpoints()
   const dfsMining = useDFSMiningContract()
+  const dfsSavings = useDFSSavingsContract()
   const bond = useBondContract()
   const dfsContract = useDFSContract()
-  const dfsMineAddress = getMiningAddress(chainId)
-
+  const dfsSavingsAddress = getSavingsAddress(chainId)
+  
   const slidesPerView = isMobile ? 1 : 3
   const swiperWrapBgImgUrl = isMobile ? '/images/reward/swiperWrapBgMobile.png' : '/images/reward/swiperWrapBg.png'
   const swiperSlideData = [
@@ -156,36 +153,38 @@ const Reward = () => {
   }
 
   const refresh = async () => {
-    const savingInterestEpoch = await dfsMining.savingInterestEpochLength()
+    const savingInterestEpoch = await dfsSavings.savingInterestEpochLength()
+    setSavingRewardInterest((await dfsSavings.savingRewardInterest()).toNumber())
+    setTotalStakedSavings(await dfsSavings.totalStakedSavings())
     setSavingInterestEpochLength(savingInterestEpoch)
+    setSavingInterestDenominator(await dfsSavings.savingInterestDenominator())
+
     setSocialRewardInterest((await dfsMining.socialRewardInterest()).toNumber())
-    setSavingRewardInterest((await dfsMining.savingRewardInterest()).toNumber())
     setTotalPower(await dfsMining.totalPower())
-    setTotalStakedSavings(await dfsMining.totalStakedSavings())
-    setSavingInterestDenominator(await dfsMining.savingInterestDenominator())
     setSocialRewardDenominator(await dfsMining.socialRewardDenominator())
     if (account) {
-      const addressToReferralStake = await dfsMining.addressToReferral(account)
+      const referralMining = await dfsMining.addressToReferral(account)
+      const referralSavings = await dfsSavings.addressToReferral(account)
       const referralBond = await bond.addressToReferral(account)
-      setReferralStake(addressToReferralStake)
+      setReferralStake(referralMining)
       setBondReward(referralBond?.bondReward)
-      setSocialReward(addressToReferralStake?.socialReward)
-      setStakedSavings(addressToReferralStake?.stakedSavings)
+      setSocialReward(referralMining?.socialReward)
+      setStakedSavings(referralSavings?.stakedSavings)
       const now = Date.now()
-      if (now >= addressToReferralStake?.savingInterestEndTime * 1000) {
-        const n = Math.ceil((now - addressToReferralStake?.savingInterestEndTime * 1000) / (savingInterestEpoch * 1000))
+      if (now >= referralSavings?.savingInterestEndTime * 1000) {
+        const n = Math.ceil((now - referralSavings?.savingInterestEndTime * 1000) / (savingInterestEpoch * 1000))
         setNextSavingInterestChangeTime(
-          addressToReferralStake?.savingInterestEndTime * 1000 + n * savingInterestEpoch * 1000,
+          referralSavings?.savingInterestEndTime * 1000 + n * savingInterestEpoch * 1000,
         )
       } else {
-        setNextSavingInterestChangeTime(addressToReferralStake?.savingInterestEndTime * 1000)
+        setNextSavingInterestChangeTime(referralSavings?.savingInterestEndTime * 1000)
       }
       setPendingSocialReward(await dfsMining.pendingSocialReward(account))
       setBondRewardUnpaid(referralBond?.bondRewardUnpaid)
       const dfsBalance = await dfsContract.balanceOf(account)
       setDfsBalance(dfsBalance)
 
-      setPendingSavingInterest(addressToReferralStake?.savingInterest.add(await dfsMining.pendingSavingInterest(account)))
+      setPendingSavingInterest(referralSavings?.savingInterest.add(await dfsSavings.pendingSavingInterest(account)))
     }
   }
   const { mutate: refreshMutate } = useSWR('refresh', refresh)
@@ -547,7 +546,7 @@ const Reward = () => {
                       onClick={async () => {
                         const parsedAmount = parseUnits(amount, 'ether')
                         try {
-                          const receipt = await dfsMining.unstakeSavings(parsedAmount)
+                          const receipt = await dfsSavings.unstakeSavings(parsedAmount)
                           await receipt.wait()
                           setAmount('')
                         } catch (error: any) {
@@ -561,22 +560,15 @@ const Reward = () => {
                       onClick={async () => {
                         if (amount) {
                           try {
-                            const allowance = await dfsContract.allowance(account, dfsMineAddress)
-                            console.log(formatUnits(allowance, 18))
+                            const allowance = await dfsContract.allowance(account, dfsSavingsAddress)
                             if (allowance.eq(0)) {
-                              const receipt = await dfsContract.approve(dfsMineAddress, MaxUint256)
+                              const receipt = await dfsContract.approve(dfsSavingsAddress, MaxUint256)
                               await receipt.wait()
                             }
-                            // allowance = await dfsContract.allowance(account, bondAddress)
-                            // console.log(formatUnits(allowance,18))
-                            // if (allowance.eq(0)) {
-                            //   const receipt = await dfsContract.approve(bondAddress, MaxUint256)
-                            //   await receipt.wait()
-                            // }
                             const parsedAmount = parseUnits(amount, 'ether')
                             console.log(formatUnits(parsedAmount, 18))
 
-                            let receipt = await dfsMining.stakeSavings(parsedAmount)
+                            let receipt = await dfsSavings.stakeSavings(parsedAmount)
                             receipt = await receipt.wait()
                             setAmount('')
                           } catch (error: any) {
@@ -600,22 +592,7 @@ const Reward = () => {
       {powerRewardDetailModalVisible ? (
         <DetailModal detailData={powerRewardDetailData} onClose={closeUnlockedDetailModal} isBond={false}/>
       ) : null}
-      {/* {!account && (
-        <NoPower
-          title={t('You cannot view this page right now')}
-          description={t('Please connect your wallet')}
-          btnText={t('Connect')}
-          action={onPresentWalletModal}
-        />
-      )} */}
-      {/* {account && !access && (
-        <NoPower
-          title={t('You cannot view this page right now')}
-          description={t('Please check after bonds purchase')}
-          btnText={t('Buy Bonds')}
-          action={() => router.push(`/bond`)}
-        />
-      )} */}
+
     </RewardPageWrap>
   )
 }
