@@ -68,6 +68,7 @@ import {
   getIDOContract,
   getNFTDatabaseContract,
   getBondContract,
+  getBondOldContract,
   getHBondContract,
   getHDFSContract,
   getDiffusionAICatContract,
@@ -410,6 +411,11 @@ export const useBondContract = (withSignerIfPossible = true) => {
   const { chainId } = useActiveChainId()
   const providerOrSigner = useProviderOrSigner(withSignerIfPossible)
   return useMemo(() => getBondContract(providerOrSigner,chainId), [providerOrSigner])
+}
+export const useBondOldContract = (withSignerIfPossible = true) => {
+  const { chainId } = useActiveChainId()
+  const providerOrSigner = useProviderOrSigner(withSignerIfPossible)
+  return useMemo(() => getBondOldContract(providerOrSigner,chainId), [providerOrSigner])
 }
 export const useDFSMiningContract = (withSignerIfPossible = true) => {
   const { chainId } = useActiveChainId()

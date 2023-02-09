@@ -6,7 +6,7 @@ import { useTranslation } from '@pancakeswap/localization'
 import { Skeleton, useMatchBreakpoints } from '@pancakeswap/uikit'
 import { getMiningAddress, getDFSAddress, getPairAddress, getUSDTAddress } from 'utils/addressHelpers'
 import { MaxUint256 } from '@ethersproject/constants'
-import { useBondContract, useDFSContract, useDFSMiningContract, useERC20, usePairContract } from 'hooks/useContract'
+import { useBondContract,useBondOldContract, useDFSContract, useDFSMiningContract, useERC20, usePairContract } from 'hooks/useContract'
 import { formatBigNumber, formatNumber } from '@pancakeswap/utils/formatBalance'
 import { useRouterContract } from 'utils/exchange'
 import { BigNumber } from '@ethersproject/bignumber'
@@ -60,8 +60,6 @@ const Bond = () => {
   const [bondModalVisible, setBondModalVisible] = useState<boolean>(false)
   const [settingModalVisible, setSettingModalVisible] = useState<boolean>(false)
 
-  const [bondDFS, setBondDFS] = useState<BigNumber>(BigNumber.from(0))
-  const [foundationDFS, setFoundationDFS] = useState<BigNumber>(BigNumber.from(0))
   const [discount, setDiscount] = useState<number>(0)
 
   const [isApprove, setIsApprove] = useState<boolean>(false)
@@ -70,6 +68,7 @@ const Bond = () => {
   const [marketPrice, setMarketPrice] = useState<number>(0)
   const [central, setCentral] = useState<number>(0)
   const bond = useBondContract()
+  const bondOld = useBondOldContract()
   const dfs = useDFSContract()
   const usdtAddress = getUSDTAddress(chainId)
   const usdt = useERC20(usdtAddress, true)
@@ -78,12 +77,6 @@ const Bond = () => {
   const pair = usePairContract(pairAddress)
 
   const { data, status } = useSWR('setPriceDiscount', async () => {
-    const dfsOfBond = await dfs.balanceOf(bond.address)
-    setBondDFS(dfsOfBond)
-
-    const dfsOfFoundation = await dfs.balanceOf(foundation)
-    setFoundationDFS(dfsOfFoundation)
-
     const bondDiscount = await bond.discount()
     setDiscount(bondDiscount.toNumber())
 
@@ -95,7 +88,7 @@ const Bond = () => {
     bondDatas[0].discount = bondDiscount
 
     setMarketPrice(marketPriceNumber)
-    const totalPayout = await bond.totalPayout()
+    const totalPayout = (await bond.totalPayout()).add(await bondOld.totalPayout())
     setCentral(parseFloat(formatUnits(totalPayout.mul(8))) * marketPriceNumber + 212515)
 
   })
@@ -151,12 +144,12 @@ const Bond = () => {
         console.log(error.reason ?? error.data?.message ?? error.message)
       })
     setBondData([dfsUsdt, ...bondDatas.slice(1)])
-    dfs
-      .totalSupply()
-      .then((res) => setDfsTotalSupply(res * marketPrice))
-      .catch((error) => {
-        console.log(error.reason ?? error.data?.message ?? error.message)
-      })
+    // dfs
+    //   .totalSupply()
+    //   .then((res) => setDfsTotalSupply(res * marketPrice))
+    //   .catch((error) => {
+    //     console.log(error.reason ?? error.data?.message ?? error.message)
+    //   })
   }, [account, marketPrice])
   return (
     <BondPageWrap>

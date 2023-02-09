@@ -54,6 +54,7 @@ import {
   getMiningAddress,
   getSavingsAddress,
   getBondAddress,
+  getBondOldAddress,
   getHBondAddress,
   getHDFSAddress,
   getDiffusionAICatAddress,
@@ -450,6 +451,9 @@ export const getPDFSContract = (signer?: Signer | Provider, chainId?: number) =>
 }
 export const getBondContract = (signer?: Signer | Provider, chainId?: number) => {
   return getContract({ abi: dfsBond, address: getBondAddress(chainId), signer })
+}
+export const getBondOldContract = (signer?: Signer | Provider, chainId?: number) => {
+  return getContract({ abi: dfsBond, address: getBondOldAddress(chainId), signer })
 }
 export const getMiningContract = (signer?: Signer | Provider, chainId?: number) => {
   return getContract({ abi: mineAbi, address: getMiningAddress(chainId), signer })
