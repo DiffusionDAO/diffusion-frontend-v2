@@ -4,7 +4,7 @@ import { makeStyles } from '@material-ui/core/styles'
 import { useState } from 'react'
 import useSWR from 'swr'
 import { Skeleton, useMatchBreakpoints } from '@pancakeswap/uikit'
-import { useBondContract, useDFSContract, useDFSMiningContract, useDFSSavingsContract, usePairContract } from 'hooks/useContract'
+import { useBondContract,useBondOldContract, useDFSContract, useDFSMiningContract, useDFSSavingsContract, usePairContract } from 'hooks/useContract'
 import {  getDFSAddress, getPairAddress, getUSDTAddress } from 'utils/addressHelpers'
 import { BigNumber } from '@ethersproject/bignumber'
 import { formatUnits, parseEther } from '@ethersproject/units'
@@ -81,6 +81,7 @@ const Dashboard = () => {
   const dfsSavings = useDFSSavingsContract()
   const dfs = useDFSContract()
   const bond = useBondContract()
+  const bondOld = useBondOldContract()
   const dfsAddress = getDFSAddress(chainId)
   const usdtAddress = getUSDTAddress(chainId)
 
@@ -95,6 +96,8 @@ const Dashboard = () => {
     const dfsTotalCalls = await dfs.totalCalls()
     const bondTotalCalls = await bond.totalCalls()
     const savingsTotalCalls = await dfsSavings.totalCalls()
+
+    const bondDfs = await dfs.balanceOf(bond.address)
     const dashboard = {
       callFactor: miningTotalCalls.add(dfsTotalCalls).add(bondTotalCalls).add(savingsTotalCalls),
       DSGE,
@@ -107,9 +110,9 @@ const Dashboard = () => {
       elementaryMintAddressDfs: await dfs.balanceOf(elementaryMintAddress),
       advancedMintAddressDfs: await dfs.balanceOf(advancedMintAddress),
       daoDFS: BigNumber.from(0),
-      bondDfs: await dfs.balanceOf(bond.address),
+      bondDfs:bondDfs.add(await dfs.balanceOf(bondOld.address)) ,
       dfsTotalSupply: await dfs.totalSupply(),
-      totalPayout: await bond.totalPayout(),
+      totalPayout: (await bond.totalPayout()).add(await bondOld.totalPayout()),
       unstakeNFTDFS: await dfs.balanceOf(unstakeNFTAddress),
       nftMarketDestroyedDFS: await dfs.balanceOf(nftMarketDestroyAddress),
       withdrawedSocialReward: await dfsMining.withdrawedSocialReward(),

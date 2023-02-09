@@ -60,8 +60,6 @@ const Bond = () => {
   const [bondModalVisible, setBondModalVisible] = useState<boolean>(false)
   const [settingModalVisible, setSettingModalVisible] = useState<boolean>(false)
 
-  const [bondDFS, setBondDFS] = useState<BigNumber>(BigNumber.from(0))
-  const [foundationDFS, setFoundationDFS] = useState<BigNumber>(BigNumber.from(0))
   const [discount, setDiscount] = useState<number>(0)
 
   const [isApprove, setIsApprove] = useState<boolean>(false)
@@ -79,12 +77,6 @@ const Bond = () => {
   const pair = usePairContract(pairAddress)
 
   const { data, status } = useSWR('setPriceDiscount', async () => {
-    const dfsOfBond = await dfs.balanceOf(bond.address)
-    setBondDFS(dfsOfBond)
-
-    const dfsOfFoundation = await dfs.balanceOf(foundation)
-    setFoundationDFS(dfsOfFoundation)
-
     const bondDiscount = await bond.discount()
     setDiscount(bondDiscount.toNumber())
 
@@ -152,12 +144,12 @@ const Bond = () => {
         console.log(error.reason ?? error.data?.message ?? error.message)
       })
     setBondData([dfsUsdt, ...bondDatas.slice(1)])
-    dfs
-      .totalSupply()
-      .then((res) => setDfsTotalSupply(res * marketPrice))
-      .catch((error) => {
-        console.log(error.reason ?? error.data?.message ?? error.message)
-      })
+    // dfs
+    //   .totalSupply()
+    //   .then((res) => setDfsTotalSupply(res * marketPrice))
+    //   .catch((error) => {
+    //     console.log(error.reason ?? error.data?.message ?? error.message)
+    //   })
   }, [account, marketPrice])
   return (
     <BondPageWrap>

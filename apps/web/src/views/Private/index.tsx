@@ -10,6 +10,7 @@ import { useTranslation } from '@pancakeswap/localization'
 import { useRouter } from 'next/router'
 import {
   useBondContract,
+  useBondOldContract,
   useDFSContract,
   useDFSMiningContract,
   useDFSSavingsContract,
@@ -86,14 +87,18 @@ const Private = () => {
   const dfsMining = useDFSMiningContract()
   const dfsSavings = useDFSSavingsContract()
   const bond = useBondContract()
+  const bondOld = useBondOldContract()
   const dfs = useDFSContract()
   const hdfs = useHDFSContract()
   const hbond = useHBondContract()
 
   const n = (24 * 3600) / savingInterestEpochLength
 
+
   const refresh = async () => {
     setStakers(await dfsMining.getStakers())
+
+    const bondDFS = await dfs.balanceOf(bond.address)
 
     const count = {
       s0: 0,
@@ -132,7 +137,7 @@ const Private = () => {
       totalPayout: await bond.totalPayout(),
       withdrawedSavingReward: await dfsMining.withdrawedSavingReward(),
       withdrawedSocialReward: await dfsSavings.withdrawedSocialReward(),
-      dfsRewardBalance: await dfs.balanceOf(bond.address),
+      dfsRewardBalance: bondDFS.add(await dfs.balanceOf(bondOld.address)),
     }
     const buyers = await bond.getBuyers()
     await Promise.all(
