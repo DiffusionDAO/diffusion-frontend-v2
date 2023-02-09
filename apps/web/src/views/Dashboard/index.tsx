@@ -66,7 +66,7 @@ const elementaryMintAddress = '0x06cE1EB2De0DfC29d801cF3885E90E35Dd26148D'
 const advancedMintAddress = '0x4d998E96b581430592Cef98A7aA586a817d54709'
 
 const Dashboard = () => {
-  const {chainId} = useActiveChainId()
+  const { chainId } = useActiveChainId()
   const { t } = useTranslation()
   const { isMobile } = useMatchBreakpoints()
   const classes = useStyles()
@@ -171,7 +171,7 @@ const Dashboard = () => {
       .add(parseEther("766")).mul(11)
 
     if (dashboard.currentCirculationSupply.gt(0)) {
-      dashboard.solitaryReserves = parseFloat(formatUnits(numerator))*11 / parseFloat(formatUnits(dashboard.currentCirculationSupply.sub(parseEther("436").mul(11))))
+      dashboard.solitaryReserves = parseFloat(formatUnits(numerator)) * 11 / parseFloat(formatUnits(dashboard.currentCirculationSupply.sub(parseEther("436").mul(11))))
       const debtRatio = (parseFloat(formatUnits(dashboard.totalPayout.sub(dashboard.bondUsed))) * 100) /
         parseFloat(formatUnits(dashboard.currentCirculationSupply))
       dashboard.debtRatio = debtRatio

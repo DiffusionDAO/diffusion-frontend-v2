@@ -212,8 +212,6 @@ export interface ApiResponseCollectionTokens {
   data: Record<string, ApiSingleTokenData>
 }
 
-// Get specific token data
-// ${API_NFT}/collections/${collectionAddress}/tokens/${tokenId}
 export interface ApiResponseSpecificToken {
   data: {
     tokenId: string
