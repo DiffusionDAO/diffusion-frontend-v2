@@ -145,6 +145,9 @@ export const getPairAddress = (chainId?: number) => {
 export const getBondAddress = (chainId?: number) => {
   return getAddress(addresses.bond,chainId)
 }
+export const getBondOldAddress = (chainId?: number) => {
+  return getAddress(addresses.bondOld,chainId)
+}
 export const getMiningAddress = (chainId?: number) => {
   return getAddress(addresses.dfsMining,chainId)
 }
