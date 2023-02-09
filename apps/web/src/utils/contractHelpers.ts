@@ -54,6 +54,7 @@ import {
   getMiningAddress,
   getSavingsAddress,
   getBondAddress,
+  getBondOldAddress,
   getHBondAddress,
   getHDFSAddress,
   getDiffusionAICatAddress,
