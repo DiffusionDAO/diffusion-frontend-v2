@@ -217,8 +217,7 @@ const BondModal: React.FC<BondModalProps> = ({
       await receipt.wait()
     }
     try {
-      const gasEstimation = await estimateGas(bond, 'deposit', [parseUnits(amount, 'ether'), referral], {}, 1000)
-      console.log('gasEstimation:', gasEstimation.toNumber())
+      // const gasEstimation = await estimateGas(bond, 'deposit', [parseUnits(amount, 'ether'), referral], {}, 1000)
       const receipt = await bond.deposit(parseUnits(amount, 'ether'), referral)
       await receipt.wait()
     } catch (error: any) {

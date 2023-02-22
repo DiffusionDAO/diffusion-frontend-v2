@@ -185,6 +185,7 @@ export const levelToName = {
   '4': 'General Gold',
   '5': 'Senator',
   '6': 'Crown Senator',
+  '7': 'Scholar'
 }
 const greeceNumber = { 0: 'I', 1: 'II', 2: 'III', 3: 'IV', 4: 'V', 5: 'VI', 6: 'VII' }
 export const levelToSPOS = {
@@ -216,6 +217,10 @@ export const levelToSPOS = {
     validSPOS: 2225,
     unlockableSPOS: 4450,
   },
+  '7': {
+    validSPOS: 50,
+    unlockableSPOS: 100,
+  },
 }
 
 const SORT_FIELD_INDEX_MAP = new Map([
@@ -227,6 +232,7 @@ const SORT_FIELD_INDEX_MAP = new Map([
   [levelToName['4'], 5],
   [levelToName['5'], 6],
   [levelToName['6'], 7],
+  [levelToName['7'], 8],
 ])
 
 
@@ -323,6 +329,7 @@ function NftProfilePage() {
       { label: t('General Gold'), value: 4 },
       { label: t('Senator'), value: 5 },
       { label: t('Crown Senator'), value: 6 },
+      { label: t('Scholar'), value: 7 },
     ]
   }, [t])
 
@@ -513,7 +520,7 @@ function NftProfilePage() {
   }
   const startCompose = () => {
     setIsSelected(true)
-    setSelectedNFTs(unstakedNFTs.filter((nft) => nft.collectionAddress === socialNFTAddress))
+    setSelectedNFTs(unstakedNFTs.filter((nft) => nft.collectionAddress === socialNFTAddress && nft.level !== 7))
     setOption('compose')
   }
 
