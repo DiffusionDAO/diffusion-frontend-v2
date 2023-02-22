@@ -43,11 +43,11 @@ import InsufficientBalance from './components/InsufficientBalance'
 import PlayBindBoxModal from './components/PlayMintBoxModal'
 
 const Mint = () => {
-  const {chainId} = useActiveChainId()
+  const { chainId } = useActiveChainId()
   const { account } = useWeb3React()
   const { isMobile } = useMatchBreakpoints()
   const { t } = useTranslation()
-  
+
   const [mintBoxModalVisible, setMintBoxModalVisible] = useState<boolean>(false)
   const [InsufficientBalanceVisible, setInsufficientBalanceModalVisible] = useState<boolean>(false)
   const [playMintBoxModalVisible, setPlayBindBoxModalVisible] = useState<boolean>(false)
@@ -116,7 +116,7 @@ const Mint = () => {
 
   const mint = async (type: string, useBond: boolean) => {
     if (!account) {
-      
+
       return
     }
     if (type === 'ordinary') {
@@ -154,15 +154,15 @@ const Mint = () => {
     setGifUrl(`/images/mint/${type}.gif`)
     setPlayBindBoxModalVisible(true)
 
-    let gasEstimation:BigNumber = BigNumber.from(0)
+    let gasEstimation: BigNumber = BigNumber.from(0)
     if (type === 'ordinary') {
       gasEstimation = await estimateGas(socialNFT, 'mintElementary', [ordinaryCount, useBond], {}, 1500)
     } else if (type === 'senior') {
       gasEstimation = await estimateGas(socialNFT, 'mintAdvanced', [seniorCount, useBond], {}, 1500)
     } else if (type === 'try') {
-      gasEstimation = await estimateGas(socialNFT, 'mintAdvanced', [tryCount, useBond], {}, 1500)
+      gasEstimation = await estimateGas(socialNFT, 'mintTry', [tryCount, useBond], {}, 1500)
     }
-      
+
     console.log('gasEstimation:', gasEstimation.toNumber())
     try {
       // eslint-disable-next-line react-hooks/rules-of-hooks
@@ -170,7 +170,7 @@ const Mint = () => {
       if (type === 'ordinary') {
         res = await socialNFT.mintElementary(ordinaryCount, useBond, { gasLimit: gasEstimation })
       } else if (type === 'senior') {
-        res =await socialNFT.mintAdvanced(seniorCount, useBond, { gasLimit: gasEstimation })
+        res = await socialNFT.mintAdvanced(seniorCount, useBond, { gasLimit: gasEstimation })
       } else if (type === 'try') {
         res = await socialNFT.mintTry(tryCount, useBond, { gasLimit: gasEstimation })
       }
@@ -179,6 +179,7 @@ const Mint = () => {
       // eslint-disable-next-line prefer-const
       let levelTokenIds = {}
       const topics = '0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef'
+      console.log(logs)
       for (let i = 0; i < logs.length; i++) {
         if (logs[i] && logs[i].topics[0] === topics && logs[i].address === socialNFT.address) {
           const id = BigNumber.from(logs[i]?.topics[3])
@@ -216,7 +217,7 @@ const Mint = () => {
     <BondPageWrap>
       <DrawBlindBoxList>
         <Grid container spacing={2}>
-          <Grid item lg={6} md={6} sm={12} xs={12}>
+          <Grid item lg={4} md={4} sm={12} xs={12}>
             <DrawBlindBoxItem className="item1">
               <DrawBlindBoxImgWrap className="item1">
                 <BoxLeftAskImg src="/images/mint/orangeLeftAsk.png" />
@@ -231,14 +232,14 @@ const Mint = () => {
                     valueDivStyle={{ fontSize: '14px' }}
                     position="horizontal"
                   />
-                  <DataCell
+                  {/* <DataCell
                     label={t('Description')}
                     value={t('Acquire any of the 2 types of NFT cards')}
                     valueDivStyle={{ fontSize: '14px', textAlign: 'right' }}
                     position="horizontal"
-                  />
+                  /> */}
                   <DalaCardCellWrap>
-                    <DalaCardLabelDiv>{t('Rewards probability')}</DalaCardLabelDiv>
+                    <DalaCardLabelDiv>{t('Probability')}</DalaCardLabelDiv>
                     <DalaCardValueDiv>
                       <ColorFont style={{ color: '#FF7056' }}> 95% </ColorFont>
                       {t('Wiseman')}
@@ -316,7 +317,7 @@ const Mint = () => {
               </ContentWrap>
             </DrawBlindBoxItem>
           </Grid>
-          <Grid item lg={6} md={6} sm={12} xs={12}>
+          <Grid item lg={4} md={4} sm={12} xs={12}>
             <DrawBlindBoxItem className="item2">
               <DrawBlindBoxImgWrap className="item2">
                 <BoxLeftAskImg src="/images/mint/purpleLeftAsk.png" />
@@ -331,17 +332,17 @@ const Mint = () => {
                     valueDivStyle={{ fontSize: '14px' }}
                     position="horizontal"
                   />
-                  <DataCell
+                  {/* <DataCell
                     label={t('Description')}
                     value={t('Acquire any of the 2 types of NFT cards')}
                     valueDivStyle={{ fontSize: '14px', textAlign: 'right' }}
                     position="horizontal"
-                  />
+                  /> */}
                   <DalaCardCellWrap>
-                    <DalaCardLabelDiv>{t('Rewards probability')}</DalaCardLabelDiv>
+                    <DalaCardLabelDiv>{t('Probability')}</DalaCardLabelDiv>
                     <DalaCardValueDiv>
                       <ColorFont style={{ color: '#EC6EFF' }}> 95% </ColorFont>
-                      {t('Wiseman fragment')}
+                      {t('Fragment')}
                       {isMobile ? <br /> : null}
                       <ColorFont style={{ color: '#EC6EFF' }}> 5% </ColorFont>
                       {t('Wiseman')}
@@ -416,11 +417,11 @@ const Mint = () => {
               </ContentWrap>
             </DrawBlindBoxItem>
           </Grid>
-          {/* <Grid item lg={4} md={4} sm={12} xs={12}>
-            <DrawBlindBoxItem className="item2">
-              <DrawBlindBoxImgWrap className="item2">
-                <BoxLeftAskImg src="/images/mint/purpleLeftAsk.png" />
-                <BoxRightAskImg src="/images/mint/purpleRightAsk.png" />
+          <Grid item lg={4} md={4} sm={12} xs={12}>
+            <DrawBlindBoxItem className="item3">
+              <DrawBlindBoxImgWrap className="item3">
+                <BoxLeftAskImg src="/images/mint/5dfs-left.png" />
+                <BoxRightAskImg src="/images/mint/5dfs-right.png" />
               </DrawBlindBoxImgWrap>
               <ContentWrap>
                 <DalaCardList>
@@ -431,6 +432,14 @@ const Mint = () => {
                     valueDivStyle={{ fontSize: '14px' }}
                     position="horizontal"
                   />
+                  <DalaCardCellWrap>
+                    <DalaCardLabelDiv>{t('Probability')}</DalaCardLabelDiv>
+                    <DalaCardValueDiv>
+                      <ColorFont style={{ color: '#11CA66' }}> 100% </ColorFont>
+                      {t('Scholar')}
+                      {isMobile ? <br /> : null}
+                    </DalaCardValueDiv>
+                  </DalaCardCellWrap>
                 </DalaCardList>
                 <CountWrap>
                   <AvailableCount>
@@ -443,7 +452,7 @@ const Mint = () => {
                 <ActionWrap>
                   <ActionLeft>
                     <DrawBlindBoxTextBtn
-                      className="purpleBtn"
+                      className="greenBtn"
                       onClick={() => {
                         if (tryCount > 1) setTryCount(tryCount - 1)
                       }}
@@ -458,7 +467,7 @@ const Mint = () => {
                       onChange={(val) => setTryCount(Number(val))}
                     />
                     <DrawBlindBoxTextBtn
-                      className="purpleBtn"
+                      className="greenBtn"
                       onClick={() => {
                         if (maxTry > 1 && tryCount < maxTry) setTryCount(tryCount + 1)
                       }}
@@ -466,7 +475,7 @@ const Mint = () => {
                       +
                     </DrawBlindBoxTextBtn>
                     <DrawBlindBoxTextBtn
-                      className="purpleBtn"
+                      className="greenBtn"
                       onClick={() => {
                         setTryCount(maxTry)
                       }}
@@ -476,7 +485,7 @@ const Mint = () => {
                   </ActionLeft>
                 </ActionWrap>
                 <DrawBlindBoxPrimaryBtn
-                  className="purpleBtn"
+                  className="greenBtn"
                   onClick={async () => {
                     const allowance = await DFS.allowance(account, socialNFT.address)
                     if (allowance.eq(0)) {
@@ -489,7 +498,7 @@ const Mint = () => {
                   {t('Balance Mint')}
                 </DrawBlindBoxPrimaryBtn>
                 <DrawBlindBoxPrimaryBtn
-                  className="purpleBtn"
+                  className="greenBtn"
                   onClick={async () => {
                     mint('try', true)
                   }}
@@ -499,7 +508,7 @@ const Mint = () => {
                 </DrawBlindBoxPrimaryBtn>
               </ContentWrap>
             </DrawBlindBoxItem>
-          </Grid> */}
+          </Grid>
         </Grid>
       </DrawBlindBoxList>
       {playMintBoxModalVisible ? <PlayBindBoxModal onClose={closePlayBindBoxModal} gifUrl={gifUrl} /> : null}

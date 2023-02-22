@@ -1,4 +1,7 @@
 {
+  "Experience Mint":"体验抽卡",
+  "Probability":"概率",
+  "Fragment":"碎片",
   "Farm": "农场",
   "Exchange": "兑换",
   "Docs": "文档",
@@ -2006,6 +2009,7 @@
   "Unused": "未使用",
   "Contract address": "合约地址",
   "SocialNFT": "社交NFT",
+  "Scholar":"学者",
   "Wiseman NFT": "智者NFT",
   "Wiseman fragment": "智者碎片",
   "Wiseman": "智者",

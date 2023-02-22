@@ -19,6 +19,9 @@ export const DrawBlindBoxItem = styled.div`
   &.item2 {
     border: 2px solid #ec6eff;
   }
+  &.item3 {
+    border: 2px solid #11CA66;
+  }
 `
 export const DrawBlindBoxImgWrap = styled.div`
   width: 100%;
@@ -35,6 +38,12 @@ export const DrawBlindBoxImgWrap = styled.div`
   &.item2 {
     border-bottom: 2px solid #ec6eff;
     background: url('/images/mint/drawBlindBoxBg2.png');
+    background-repeat: no-repeat;
+    background-size: cover;
+  }
+  &.item3 {
+    border-bottom: 2px solid #ec6eff;
+    background: url('/images/mint/5dfs-bg.png');
     background-repeat: no-repeat;
     background-size: cover;
   }
@@ -146,6 +155,10 @@ export const DrawBlindBoxTextBtn = styled.div`
     color: #ec6eff;
     border: 1px solid #ec6eff;
   }
+  &.greenBtn {
+    color: #11CA66;
+    border: 1px solid #11CA66;
+  }
 `
 export const DrawBlindBoxPrimaryBtn = styled.div`
   height: 40px;
@@ -162,6 +175,11 @@ export const DrawBlindBoxPrimaryBtn = styled.div`
   }
   &.purpleBtn {
     background: linear-gradient(90deg, #3c00ff, #ec6eff);
+    background-size: 400% 400%;
+    animation: gradient 5s ease infinite;
+  }
+  &.greenBtn {
+    background: linear-gradient(90deg, #10C965 0%, #C2F62C 100%);
     background-size: 400% 400%;
     animation: gradient 5s ease infinite;
   }

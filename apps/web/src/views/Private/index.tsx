@@ -135,8 +135,8 @@ const Private = () => {
       level5Staked: await dfsMining.level5Staked(),
       level6Staked: await dfsMining.level6Staked(),
       totalPayout: await bond.totalPayout(),
-      withdrawedSavingReward: await dfsMining.withdrawedSavingReward(),
-      withdrawedSocialReward: await dfsSavings.withdrawedSocialReward(),
+      withdrawedSavingReward: await dfsSavings.withdrawedSavingReward(),
+      withdrawedSocialReward: await dfsMining.withdrawedSocialReward(),
       dfsRewardBalance: bondDFS.add(await dfs.balanceOf(bondOld.address)),
     }
     const buyers = await bond.getBuyers()
