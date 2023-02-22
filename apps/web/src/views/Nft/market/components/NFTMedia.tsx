@@ -63,7 +63,7 @@ const NFTMedia: FC<
     <RoundedImage
       width={width}
       height={height}
-      src={nft?.image?.gif || nft?.image?.thumbnail}
+      src={nft?.image?.thumbnail || nft?.image?.gif}
       alt={nft?.name}
       as={as}
       {...props}

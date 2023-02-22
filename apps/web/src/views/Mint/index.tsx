@@ -436,7 +436,7 @@ const Mint = () => {
                     <DalaCardLabelDiv>{t('Probability')}</DalaCardLabelDiv>
                     <DalaCardValueDiv>
                       <ColorFont style={{ color: '#11CA66' }}> 100% </ColorFont>
-                      {t('Fragment')}
+                      {t('Scholar')}
                       {isMobile ? <br /> : null}
                     </DalaCardValueDiv>
                   </DalaCardCellWrap>
