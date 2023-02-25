@@ -218,8 +218,8 @@ export const levelToSPOS = {
     unlockableSPOS: 4450,
   },
   '7': {
-    validSPOS: 50,
-    unlockableSPOS: 100,
+    validSPOS: 5,
+    unlockableSPOS: 10,
   },
 }
 
