@@ -25,6 +25,7 @@ import { useShareHolderContract } from 'hooks/useContract'
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { BigNumber } from '@ethersproject/bignumber'
 import useSWR from 'swr'
+import { BondListItemBtn } from 'views/Bond/style'
 
 const COLORS = {
   ETH: '#627EEA',
@@ -150,6 +151,7 @@ const WalletInfo: React.FC<WalletInfoProps> = ({ hasLowNativeBalance, onDismiss 
         </Flex>
         <Flex alignItems="center" justifyContent="space-between">
             <Text>{`${t("Claimable Assets")}: ${formatBigNumber(claimable, 6)}`}</Text>
+            <BondListItemBtn style={{width:"30%"}} onClick={async() => await shareholder.claim()}>{t('Claim')}</BondListItemBtn>
         </Flex>
         <Flex alignItems="center" justifyContent="space-between">
             <Text>{`${t("Claimed Assets")}: ${formatBigNumber(claimed, 6)}`}</Text>

@@ -80,6 +80,13 @@
       "type": "function"
     },
     {
+      "inputs": [],
+      "name": "claim",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
       "inputs": [
         {
           "internalType": "address",
@@ -237,6 +244,19 @@
         }
       ],
       "name": "setAssets",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "_bond",
+          "type": "address"
+        }
+      ],
+      "name": "setBondAddress",
       "outputs": [],
       "stateMutability": "nonpayable",
       "type": "function"
