@@ -180,6 +180,7 @@ const MainNFTCard: React.FC<React.PropsWithChildren<MainNFTCardProps>> = ({
                     visible: true,
                   })
                 } else {
+                  console.log('dfsBalance:', formatUnits(dfsBalance), 'unstakeNeed', formatUnits(unstakeNeed))
                   toastError(t('Insufficent DFS balance for unstaking NFT requirement'))
                 }
               }
