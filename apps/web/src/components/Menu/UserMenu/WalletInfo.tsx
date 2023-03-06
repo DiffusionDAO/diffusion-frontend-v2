@@ -8,6 +8,7 @@ import {
   Skeleton,
   Text,
   CopyAddress,
+  useToast,
 } from '@pancakeswap/uikit'
 import { ChainId } from '@pancakeswap/sdk'
 import { FetchStatus } from 'config/constants/types'
@@ -21,6 +22,11 @@ import { ChainLogo } from 'components/Logo/ChainLogo'
 import { getBlockExploreLink, getBlockExploreName } from 'utils'
 import { formatBigNumber } from '@pancakeswap/utils/formatBalance'
 import { useBalance } from 'wagmi'
+import { useShareHolderContract } from 'hooks/useContract'
+import { useCallback, useEffect, useMemo, useState } from 'react'
+import { BigNumber } from '@ethersproject/bignumber'
+import useSWR from 'swr'
+import { BondListItemBtn } from 'views/Bond/style'
 
 const COLORS = {
   ETH: '#627EEA',
@@ -33,6 +39,7 @@ interface WalletInfoProps {
   onDismiss: InjectedModalProps['onDismiss']
 }
 
+
 const WalletInfo: React.FC<WalletInfoProps> = ({ hasLowNativeBalance, onDismiss }) => {
   const { t } = useTranslation()
   const { account, chainId, chain } = useActiveWeb3React()
@@ -42,6 +49,21 @@ const WalletInfo: React.FC<WalletInfoProps> = ({ hasLowNativeBalance, onDismiss 
   const native = useNativeCurrency()
   const { balance: cakeBalance, fetchStatus: cakeFetchStatus } = useGetDfsBalance()
   const { logout } = useAuth()
+  const { toastError } = useToast()
+  const [assets, setAssets] = useState<BigNumber>(BigNumber.from(0))
+  const [claimable, setClaimable] = useState<BigNumber>(BigNumber.from(0))
+  const [claimed, setClaimed] = useState<BigNumber>(BigNumber.from(0))
+
+  const shareholder = useShareHolderContract()
+
+  useSWR('holderAssets', async () => {
+    if (account) {
+      const holderAssets = await shareholder.holderAssets(account)
+      setAssets(holderAssets.assets)
+      setClaimable(holderAssets.claimable)
+      setClaimed(holderAssets.claimed)
+    }
+  })
 
   const handleLogout = () => {
     onDismiss?.()
@@ -116,6 +138,31 @@ const WalletInfo: React.FC<WalletInfoProps> = ({ hasLowNativeBalance, onDismiss 
           )}
         </Flex>
 
+      </Box>
+      <Box mb="24px">
+        <Flex justifyContent="space-between" alignItems="center" mb="8px">
+          <Flex bg={COLORS.BNB} borderRadius="16px" pl="4px" pr="8px" py="2px">
+            <Text color="white" ml="4px">
+              {t("Holder Assets")}
+            </Text>
+          </Flex>
+        </Flex>
+        <Flex alignItems="center" justifyContent="space-between">
+          <Text>{`${t("Total Assets")}: ${formatBigNumber(assets, 6)}`}</Text>
+        </Flex>
+        <Flex alignItems="center" justifyContent="space-between">
+          <Text>{`${t("Claimable Assets")}: ${formatBigNumber(claimable, 6)}`}</Text>
+          <BondListItemBtn style={{ width: "30%" }} onClick={async () => {
+            try {
+              await shareholder.claim()
+            } catch (error: any) {
+              toastError(t(error.reason ?? error.data?.message ?? error.message))
+            }
+          }}>{t('Claim')}</BondListItemBtn>
+        </Flex>
+        <Flex alignItems="center" justifyContent="space-between">
+          <Text>{`${t("Claimed Assets")}: ${formatBigNumber(claimed, 6)}`}</Text>
+        </Flex>
       </Box>
       <Button variant="secondary" width="100%" onClick={handleLogout}>
         {t('Disconnect Wallet')}

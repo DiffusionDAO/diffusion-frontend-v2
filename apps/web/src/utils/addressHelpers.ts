@@ -172,7 +172,9 @@ export const getHBondAddress = (chainId?: number) => {
 export const getHDFSAddress = (chainId?: number) => {
   return getAddress(addresses.hdfs,chainId)
 }
-
+export const getShareHolderAddress = (chainId?: number) => {
+  return getAddress(addresses.shareholder,chainId)
+}
 export const getDiffusionAICatAddress = (chainId?: number) => {
   return getAddress(addresses.diffusionAICat,chainId)
 }
