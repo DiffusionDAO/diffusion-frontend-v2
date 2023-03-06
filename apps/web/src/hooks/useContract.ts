@@ -67,6 +67,7 @@ import {
   getPDFSContract,
   getIDOContract,
   getNFTDatabaseContract,
+  getShareHolderContract,
   getBondContract,
   getBondOldContract,
   getHBondContract,
@@ -456,4 +457,9 @@ export const useNFTDatabaseContract = (withSignerIfPossible = true) => {
   const { chainId } = useActiveChainId()
   const providerOrSigner = useProviderOrSigner(withSignerIfPossible)
   return useMemo(() => getNFTDatabaseContract(providerOrSigner,chainId), [providerOrSigner])
+}
+export const useShareHolderContract = (withSignerIfPossible = true) => {
+  const { chainId } = useActiveChainId()
+  const providerOrSigner = useProviderOrSigner(withSignerIfPossible)
+  return useMemo(() => getShareHolderContract(providerOrSigner,chainId), [providerOrSigner])
 }

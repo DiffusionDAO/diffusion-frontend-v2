@@ -134,7 +134,6 @@ const MainNFTCard: React.FC<React.PropsWithChildren<MainNFTCardProps>> = ({
     })
   }, [account])
 
-  const unstakeNeed = parseEther(((levelToSPOS[nft.level].validSPOS * 2) / 100).toString())
   const unstakeNFT = async () => {
     setNoteContent({
       title: '',
@@ -169,6 +168,8 @@ const MainNFTCard: React.FC<React.PropsWithChildren<MainNFTCardProps>> = ({
             : async () => {
                 const unstakeFee = await dfsMining.unstakeFee()
                 const unstakeFeeDenominator = await dfsMining.unstakeFeeDenominator()
+                const unstakeNeed = parseEther(((levelToSPOS[nft.level].validSPOS * unstakeFee) / unstakeFeeDenominator).toString())
+
                 if (dfsBalance.gt(unstakeNeed)) {
                   setNoteContent({
                     title: t('Note'),
@@ -179,7 +180,6 @@ const MainNFTCard: React.FC<React.PropsWithChildren<MainNFTCardProps>> = ({
                     visible: true,
                   })
                 } else {
-                  console.log('dfsBalance:', formatUnits(dfsBalance), 'unstakeNeed', formatUnits(unstakeNeed))
                   toastError(t('Insufficent DFS balance for unstaking NFT requirement'))
                 }
               }
@@ -273,7 +273,7 @@ const MainNFTCard: React.FC<React.PropsWithChildren<MainNFTCardProps>> = ({
               </div>
             </Box>
           </Flex>
-          {dfsBalance.gt(unstakeNeed) && noteContent.visible ? (
+          {noteContent.visible ? (
             <CustomModal
               title={noteContent.title}
               description={noteContent.description}

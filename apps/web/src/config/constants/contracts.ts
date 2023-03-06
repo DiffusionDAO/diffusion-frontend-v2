@@ -219,4 +219,8 @@ export default {
     56: '0x2AC5537247af82a88cAbD25bd73c7768B9352F96',
     97: '0xFffDaCe366Bc562610Bb96118aCd64e3d1413462',
   },
+  shareholder:{
+    56: '0xD290EBfd0D0Ff1fbCCB61ce28eE90FB406F0Aa97',
+    97: '0xD290EBfd0D0Ff1fbCCB61ce28eE90FB406F0Aa97',
+  }
 }
