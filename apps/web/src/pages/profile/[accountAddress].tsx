@@ -293,7 +293,6 @@ function NftProfilePage() {
   const accountAddress = query.accountAddress as string
 
   const isConnectedProfile = account?.toLowerCase() === accountAddress?.toLowerCase()
-  console.log("account:",account,"isConnectedProfile:",isConnectedProfile)
   if (account && !isConnectedProfile) {
     push(`/profile/${account?.toLowerCase()}`)
   } 

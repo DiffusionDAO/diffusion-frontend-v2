@@ -87,6 +87,19 @@
       "type": "function"
     },
     {
+      "inputs": [],
+      "name": "getHolders",
+      "outputs": [
+        {
+          "internalType": "address[]",
+          "name": "",
+          "type": "address[]"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
       "inputs": [
         {
           "internalType": "address",
