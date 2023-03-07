@@ -49,28 +49,28 @@ const WalletInfo: React.FC<WalletInfoProps> = ({ hasLowNativeBalance, onDismiss 
   const native = useNativeCurrency()
   const { balance: cakeBalance, fetchStatus: cakeFetchStatus } = useGetDfsBalance()
   const { logout } = useAuth()
-  const { toastError } = useToast()
+  const { toastError, toastSuccess } = useToast()
   const [assets, setAssets] = useState<BigNumber>(BigNumber.from(0))
   const [claimable, setClaimable] = useState<BigNumber>(BigNumber.from(0))
   const [claimed, setClaimed] = useState<BigNumber>(BigNumber.from(0))
   const [isShareHolder, setIsShareHolder] = useState(false)
+  const [refresh, setRefresh] = useState(false)
 
   const shareholder = useShareHolderContract()
   const getShareHolders = useCallback(async () => {
     if (account) {
       const holderAssets = await shareholder.holderAssets(account)
       console.log("holderAssets:", holderAssets)
-      const holders = await shareholder.getHolders()
-      console.log("holders:", holders)
-      setAssets(holderAssets.assets)
-      setClaimable(holderAssets.claimable)
-      setClaimed(holderAssets.claimed)
-      console.log(holders.includes(account), account)
-      setIsShareHolder(holders.includes(account))
+      if (holderAssets) {
+        setAssets(holderAssets.assets)
+        setClaimable(holderAssets.claimable)
+        setClaimed(holderAssets.claimed)
+      }
+      setIsShareHolder(await shareholder.isShareHolder(account))
     }
   }, [account])
 
-  useEffect(() => { getShareHolders() }, [account])
+  useEffect(() => { getShareHolders() }, [account, refresh])
 
 
   const handleLogout = () => {
@@ -152,7 +152,7 @@ const WalletInfo: React.FC<WalletInfoProps> = ({ hasLowNativeBalance, onDismiss 
           <Flex justifyContent="space-between" alignItems="center" mb="8px">
             <Flex bg={COLORS.BNB} borderRadius="16px" pl="4px" pr="8px" py="2px">
               <Text color="white" ml="4px">
-                {t("Holder Assets")}
+                {t("Shareholder Assets")}
               </Text>
             </Flex>
           </Flex>
@@ -163,7 +163,10 @@ const WalletInfo: React.FC<WalletInfoProps> = ({ hasLowNativeBalance, onDismiss 
             <Text>{`${t("Claimable Assets")}: ${formatBigNumber(claimable, 6)}`}</Text>
             <BondListItemBtn style={{ width: "30%" }} onClick={async () => {
               try {
-                await shareholder.claim()
+                const receipt = await shareholder.claim()
+                await receipt.wait()
+                toastSuccess(t("Claim Successful"))
+                setRefresh(true)
               } catch (error: any) {
                 toastError(t(error.reason ?? error.data?.message ?? error.message))
               }
