@@ -221,6 +221,6 @@ export default {
   },
   shareholder:{
     56: '0x1C6e30E2787fA1Ca866dBd2a89625bd68a658D26',
-    97: '0x2c51473eAF30144984A3a33561b119bc092c4c3D',
+    97: '0x210bA90057a96010462516B5AeC67433C7630d0a',
   }
 }

@@ -60,7 +60,6 @@ const WalletInfo: React.FC<WalletInfoProps> = ({ hasLowNativeBalance, onDismiss 
   const getShareHolders = useCallback(async () => {
     if (account) {
       const holderAssets = await shareholder.holderAssets(account)
-      console.log("holderAssets:", holderAssets)
       if (holderAssets) {
         setAssets(holderAssets.assets)
         setClaimable(holderAssets.claimable)
@@ -70,7 +69,7 @@ const WalletInfo: React.FC<WalletInfoProps> = ({ hasLowNativeBalance, onDismiss 
     }
   }, [account])
 
-  useEffect(() => { getShareHolders() }, [account, refresh])
+  useEffect(() => { getShareHolders() }, [account, refresh,shareholder])
 
 
   const handleLogout = () => {
