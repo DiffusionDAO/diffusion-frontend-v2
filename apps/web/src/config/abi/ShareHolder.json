@@ -10,6 +10,11 @@
         "internalType": "address",
         "name": "_bond",
         "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "_dao",
+        "type": "address"
       }
     ],
     "stateMutability": "nonpayable",
@@ -84,6 +89,19 @@
     "name": "claim",
     "outputs": [],
     "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "dao",
+    "outputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
     "type": "function"
   },
   {
@@ -302,6 +320,19 @@
       }
     ],
     "name": "setDFSAddress",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "_dao",
+        "type": "address"
+      }
+    ],
+    "name": "setDao",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
