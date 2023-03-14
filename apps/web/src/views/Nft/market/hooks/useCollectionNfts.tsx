@@ -129,10 +129,8 @@ export const useCollectionNfts = (collectionAddress: string) => {
   const [tokenIds, setTokenIds] = useState<number[]>()
   const [tokenIdsOnSale, setTokenIdsOnSale] = useState<number[]>()
   const socialNFTAddress = getSocialNFTAddress(chainId)
-  const socialNFT = getContract({ abi: socialNFTAbi, address: socialNFTAddress, chainId })
 
   const starlightAddress = getStarlightAddress(chainId)
-  const starlight = getContract({ abi: socialNFTAbi, address: starlightAddress, chainId })
 
   const nftMarketAddress = getNftMarketAddress(chainId)
   const nftMarket = getContract({ abi: nftMarketAbi, address: nftMarketAddress, chainId })
@@ -142,22 +140,19 @@ export const useCollectionNfts = (collectionAddress: string) => {
 
   const diffusionAICatAddress = getDiffusionAICatAddress(chainId)
 
-  const diffusionAICatContract = getContract({
-    abi: diffusionAICatAbi,
-    address: diffusionAICatAddress,
-    chainId,
-  })
   const erc721 = useERC721(collectionAddress)
 
   useSWR('collections', async () => {
-    const getTokenContract = getContract({
+    const collectionContract = getContract({
       abi: socialNFTAbi,
       address: collectionAddress,
       chainId,
     })
-    setTokenIds(await getTokenContract.allTokens())
+    const allTokens = await collectionContract.allTokens()
+    setTokenIds(allTokens)
+    // console.log(allTokens)
 
-    setTokenIdsOnSale(await getTokenContract.tokensOfOwner(nftMarket.address))
+    setTokenIdsOnSale(await collectionContract.tokensOfOwner(nftMarket.address))
   })
 
   const { field, direction } = useGetNftOrdering(collectionAddress)
@@ -204,17 +199,21 @@ export const useCollectionNfts = (collectionAddress: string) => {
       return [collectionAddress, itemListingSettingsJson, pageIndex, 'collectionNfts']
     },
     async (address, settingsJson:string, page:number) => {
-      const collectionName = await erc721.name()
-      const getTokenContract = getContract({
+
+      const collectionContract = getContract({
         abi: socialNFTAbi,
         address: collectionAddress,
         chainId,
       })
+
+      const collectionName = await collectionContract.name()
+
       const tokens = await Promise.all(
         tokenIds.slice(page * REQUEST_SIZE, (page + 1) * REQUEST_SIZE).map(async (tokenId) => {
           const tokenIdString = tokenId.toString()
-          // const collectionName = await getTokenContract.name()
-          const getToken = await getTokenContract.getToken(tokenId)
+          // const collectionName = await collectionContract.name()
+          const getToken = await collectionContract.getToken(tokenId)
+          console.log("getToken:",getToken)
           const sellPrice = await nftMarket.sellPrice(collectionAddress, tokenId)
           const nft: NFT = { ...getToken, ...sellPrice }
           if (collectionAddress === socialNFTAddress) nft.staker = await dfsMining.staker(tokenId)
@@ -280,7 +279,7 @@ export const useCollectionNfts = (collectionAddress: string) => {
       if (settings.showOnlyNftsOnSale) {
         newNfts = await Promise.all(
           tokenIdsOnSale.map(async (tokenId) => {
-            const token = await getTokenContract.getToken(tokenId)
+            const token = await collectionContract.getToken(tokenId)
             let name
 
             let thumbnail = `/images/nfts/${collectionName.toLowerCase()}/${tokenId}`

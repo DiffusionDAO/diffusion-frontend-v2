@@ -10,7 +10,6 @@ const Items = () => {
   const [sortBy, setSortBy] = useState('updatedAt')
   const { t } = useTranslation()
   const collection = useGetCollection(collectionAddress)
-
   const handleChange = (newOption: OptionProps) => {
     setSortBy(newOption.value)
   }
