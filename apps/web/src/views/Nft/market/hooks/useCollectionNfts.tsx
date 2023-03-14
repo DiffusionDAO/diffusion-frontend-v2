@@ -140,8 +140,6 @@ export const useCollectionNfts = (collectionAddress: string) => {
 
   const diffusionAICatAddress = getDiffusionAICatAddress(chainId)
 
-  const erc721 = useERC721(collectionAddress)
-
   useSWR('collections', async () => {
     const collectionContract = getContract({
       abi: socialNFTAbi,
