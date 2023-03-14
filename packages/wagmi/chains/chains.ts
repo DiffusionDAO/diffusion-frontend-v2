@@ -8,8 +8,8 @@ export const bsc: Chain = {
   name: 'Binance Smart Chain',
   network: 'bsc',
   rpcUrls: {
-    public: 'https://side-evocative-shadow.bsc.quiknode.pro/0b6fd4cfda64092c3df0cf5aaab84def28c3d036/', //'https://bsc-dataseed1.defibit.io',
-    default: 'https://side-evocative-shadow.bsc.quiknode.pro/0b6fd4cfda64092c3df0cf5aaab84def28c3d036/',
+    public: 'https://bsc-dataseed1.defibit.io', //'https://bsc-dataseed1.defibit.io',
+    default: 'https://bsc-dataseed1.defibit.io',
   },
   blockExplorers: {
     default: bscExplorer,
