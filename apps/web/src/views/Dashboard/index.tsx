@@ -109,6 +109,7 @@ const Dashboard = () => {
   const [gettingMining, setGettingMining] = useState<boolean>(false)
   const [gettingPair, setGettingPair] = useState<boolean>(false)
   const [totalPayout, setTotalPayout] = useState<BigNumber>()
+  const [tvl, setTvl] = useState<BigNumber>()
 
   const [holderLength, setHolderLength] = useState<number>(undefined)
   const [data, setData] = useState<any>({})
@@ -246,10 +247,10 @@ const Dashboard = () => {
     console.log("getPair")
     const reserves = await pair.getReserves()
     const [numerator, denominator] = usdtAddress.toLowerCase() < dfsAddress.toLowerCase() ? [reserves[0], reserves[1]] : [reserves[1], reserves[0]]
+    setTvl(numerator.mul(2).add(parseEther("10000")))
     const marketPrice = parseFloat(formatUnits(numerator)) / parseFloat(formatUnits(denominator))
-
+    
     const dashboard = {
-      tvl: numerator.mul(2).add(parseEther("10000")),
       marketPrice,
       solitaryReserves: undefined,
       inflationRate: undefined,
@@ -259,7 +260,6 @@ const Dashboard = () => {
       if (dashboard.marketPrice > 0 && dashboard.solitaryReserves > 0) {
         dashboard.inflationRate = (dashboard.marketPrice - dashboard.solitaryReserves) / dashboard.marketPrice
       }
-      
     }
     
 
@@ -310,6 +310,11 @@ const Dashboard = () => {
     
   }, [pair, usdtAddress,currentCirculationSupply])
 
+  useEffect(() => {
+    if (pair && !gettingPair)
+      getPair()
+  }, [pair,currentCirculationSupply,gettingPair])
+
   useEffect(()=>{
     if (dfs && !gettingDFSBalance) {
       setGettingDFSBalance(true)
@@ -318,6 +323,8 @@ const Dashboard = () => {
     }
   },[dfs,gettingDFSBalance])
 
+  
+  
   useEffect(()=>{
     if (dfsSavings && !gettingSavings){
       setGettingSavings(true)
@@ -339,10 +346,7 @@ const Dashboard = () => {
     }
   },[dfsMining,gettingMining])
 
-  useEffect(() => {
-    if (pair && currentCirculationSupply?.gt(0) && !gettingPair)
-      getPair()
-  }, [pair,currentCirculationSupply,gettingPair])
+
 
   const time = new Date()
 
@@ -389,7 +393,7 @@ const Dashboard = () => {
                           <div className="cell-sub-item">
                             <DataCell
                               title={t('TVL')}
-                              data={data?.tvl && `$${formatBigNumber(data?.tvl.mul(9), 2)}`}
+                              data={tvl && `$${formatBigNumber(tvl.mul(9), 2)}`}
                               style={{ fontSize: '32px' }}
                             />
                             <DataCell title="" data="" imgUrl="/images/dashboard/tvl.svg" />
@@ -505,7 +509,7 @@ const Dashboard = () => {
                           <div className="cell-sub-item">
                             <DataCell
                               title={t('Debt ratio')}
-                              data={`${formatNumber(debtRatio ?? 0, 2)}%`}
+                              data={debtRatio && `${formatNumber(debtRatio)}%`}
                               progressColor="#0131ff"
                             />
                           </div>

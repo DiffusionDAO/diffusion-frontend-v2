@@ -7,6 +7,8 @@
   "plugins": ["lodash"],
   "extends": ["@pancakeswap/eslint-config-diffusion", "plugin:react/jsx-runtime"],
   "rules": {
+    "no-shadow": "off",
+    "@typescript-eslint/no-shadow": 0,
     "no-restricted-syntax": 0,
     "import/no-unresolved": 0,
     "no-console": ["warn", { "allow": ["info", "warn", "error", "debug"] }],
