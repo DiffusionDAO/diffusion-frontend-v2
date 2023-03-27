@@ -84,13 +84,13 @@ const Dashboard = () => {
   const [dfsTotalCalls, setDfsTotalCalls] = useState<BigNumber>()
   const [dfsTotalSupply, setDfsTotalSupply] = useState<BigNumber>(BigNumber.from(0))
 
-  const [DSGE, setDSGE] = useState<string>('0')
-  const [houseHoldSavingsRate, setHouseHoldSavingsRate] = useState<string>('0')
+  const [DSGE, setDSGE] = useState<string>()
+  const [houseHoldSavingsRate, setHouseHoldSavingsRate] = useState<string>()
   const [savingsTotalCalls, setSavingsTotalCalls] = useState<BigNumber>()
 
   const [currentCirculationSupply, setCurrentCirculationSupply] = useState<BigNumber>()
   const [totalCirculationSupply, setTotalCirculationSupply] = useState<BigNumber>()
-  const [targetInflationRate, setTargetInflationRate] = useState<string>("0")
+  const [targetInflationRate, setTargetInflationRate] = useState<string>()
 
   const [withdrawedSavingReward, setWithdrawedSavingReward] = useState<BigNumber>(BigNumber.from(0))
 
@@ -112,7 +112,7 @@ const Dashboard = () => {
   const [tvl, setTvl] = useState<BigNumber>()
 
   const [holderLength, setHolderLength] = useState<number>(undefined)
-  const [data, setData] = useState<any>({})
+  // const [data, setData] = useState<any>({})
   const pair = usePairContract(getPairAddress(chainId))
   const dfs = useDFSContract()
   const dfsMining = useDFSMiningContract()
@@ -122,8 +122,61 @@ const Dashboard = () => {
   const dfsAddress = getDFSAddress(chainId)
   const usdtAddress = getUSDTAddress(chainId)
 
-  const getDFSBalances = useCallback(async () => {
-    if (dfs && !gettingDFSBalance) {
+  const {data, mutate} = useSWR('getDashboard',async()=>{
+    const dashboard = {
+      marketPrice:0,
+      solitaryReserves: undefined,
+      inflationRate: undefined,
+    }
+    if (pair) {
+      const reserves = await pair.getReserves()
+      const [numerator, denominator] = usdtAddress.toLowerCase() < dfsAddress.toLowerCase() ? [reserves[0], reserves[1]] : [reserves[1], reserves[0]]
+      setTvl(numerator.mul(2).add(parseEther("10000")))
+      const marketPrice = parseFloat(formatUnits(numerator)) / parseFloat(formatUnits(denominator))
+      dashboard.marketPrice = marketPrice
+
+      if (currentCirculationSupply?.gt(0)) {
+        dashboard.solitaryReserves = parseFloat(formatUnits(numerator)) * 11 / parseFloat(formatUnits(currentCirculationSupply))
+        if (dashboard.marketPrice > 0 && dashboard.solitaryReserves > 0) {
+          dashboard.inflationRate = (dashboard.marketPrice - dashboard.solitaryReserves) / dashboard.marketPrice
+        }
+      }
+    }
+    if (dfsSavings ) {
+      const savingsTotalCalls = await dfsSavings.totalCalls()
+      setSavingsTotalCalls(savingsTotalCalls)
+      setDSGE(await dfsSavings.DSGE())
+      setHouseHoldSavingsRate(await dfsSavings.HouseHoldSavingsRate())
+      setWithdrawedSavingReward(await dfsSavings.withdrawedSavingReward())
+    }
+
+    if (bond ) {
+      const buyers = await bond.getBuyers()
+      let bondUsed = BigNumber.from(0)
+      let bondRewardWithdrawed = BigNumber.from(0)
+      await Promise.all(
+        buyers?.map(async (buyer) => {
+          const referral = await bond.addressToReferral(buyer)
+          bondUsed = bondUsed.add(referral.bondUsed)
+          bondRewardWithdrawed = bondRewardWithdrawed.add(referral.bondRewardWithdrawed)
+        }),
+      )
+      setBondUsed(bondUsed)
+      const totalPayout = (await bond.totalPayout()).add(await bondOld.totalPayout())
+
+      setTotalPayout(totalPayout)
+      const totalCirculationSupply = totalPayout
+        .mul(1315)
+        .div(1000).mul(11)
+        // .add(parseEther("766")).mul(11)
+
+      setTotalCirculationSupply(totalCirculationSupply)
+      const bondTotalCalls = await bond.totalCalls()
+      setBondTotalCalls(bondTotalCalls)
+      setBondRewardWithdrawed(bondRewardWithdrawed)
+      setTargetInflationRate(await bond.targetInflationRate())
+    }
+    if (dfs ) {
       const foundationDFS = await dfs.balanceOf(foundation)
       
       setFoundationDFS(foundationDFS)
@@ -186,78 +239,41 @@ const Dashboard = () => {
       const dfsTotalCalls = await dfs.totalCalls()
       setDfsTotalCalls(dfsTotalCalls)
     }
-  }, [gettingDFSBalance])
 
-  const getBond = useCallback(async () => {
-    if (bond) {
 
-      const buyers = await bond.getBuyers()
-      let bondUsed = BigNumber.from(0)
-      let bondRewardWithdrawed = BigNumber.from(0)
-      await Promise.all(
-        buyers?.map(async (buyer) => {
-          const referral = await bond.addressToReferral(buyer)
-          bondUsed = bondUsed.add(referral.bondUsed)
-          bondRewardWithdrawed = bondRewardWithdrawed.add(referral.bondRewardWithdrawed)
-        }),
-      )
-      setBondUsed(bondUsed)
-      const totalPayout = (await bond.totalPayout()).add(await bondOld.totalPayout())
 
-      setTotalPayout(totalPayout)
-      const totalCirculationSupply = totalPayout
-        .mul(1315)
-        .div(1000).mul(11)
-        // .add(parseEther("766")).mul(11)
 
-      setTotalCirculationSupply(totalCirculationSupply)
-      const bondTotalCalls = await bond.totalCalls()
-      setBondTotalCalls(bondTotalCalls)
-      setBondRewardWithdrawed(bondRewardWithdrawed)
-      setTargetInflationRate(await bond.targetInflationRate())
-    }
-  }, [bond, bondOld])
-
-  const getSavings = useCallback(async () => {
-    if (dfsSavings && !gettingSavings) {
-      const savingsTotalCalls = await dfsSavings.totalCalls()
-      setSavingsTotalCalls(savingsTotalCalls)
-      setDSGE(await dfsSavings.DSGE())
-      setHouseHoldSavingsRate(await dfsSavings.HouseHoldSavingsRate())
-      setWithdrawedSavingReward(await dfsSavings.withdrawedSavingReward())
-    }
-  }, [dfsSavings,gettingSavings])
-
-  const getMining = useCallback(async () => {
-    if (dfsMining) {
+    if (dfsMining ) {
       const miningTotalCalls = await dfsMining.totalCalls()
       setMiningTotalCalls(miningTotalCalls)
       setWithdrawedSocialReward(await dfsMining.withdrawedSocialReward())
     }
-  }, [dfsMining])
+
+    
+    const avgConentraction = 6991.59
+    return { ...dashboard, avgConentraction }
+  })
+  // const getDFSBalances = useCallback(async () => {
+    
+  // }, [gettingDFSBalance])
+
+  // const getBond = useCallback(async () => {
+    
+  // }, [bond, bondOld])
+
+  // const getSavings = useCallback(async () => {
+
+  // }, [dfsSavings,gettingSavings])
+
+  // const getMining = useCallback(async () => {
+
+  // }, [dfsMining])
 
   const clickTab = (tab: string) => {
     setActiveTab(tab)
   }
 
   const getPair = useCallback(async () => {
-    const reserves = await pair.getReserves()
-    const [numerator, denominator] = usdtAddress.toLowerCase() < dfsAddress.toLowerCase() ? [reserves[0], reserves[1]] : [reserves[1], reserves[0]]
-    setTvl(numerator.mul(2).add(parseEther("10000")))
-    const marketPrice = parseFloat(formatUnits(numerator)) / parseFloat(formatUnits(denominator))
-    
-    const dashboard = {
-      marketPrice,
-      solitaryReserves: undefined,
-      inflationRate: undefined,
-    }
-    if (currentCirculationSupply?.gt(0)) {
-      dashboard.solitaryReserves = parseFloat(formatUnits(numerator)) * 11 / parseFloat(formatUnits(currentCirculationSupply.sub(parseEther("436").mul(11))))
-      if (dashboard.marketPrice > 0 && dashboard.solitaryReserves > 0) {
-        dashboard.inflationRate = (dashboard.marketPrice - dashboard.solitaryReserves) / dashboard.marketPrice
-      }
-    }
-    
 
     // console.log("totalCirculation:",formatUnits(totalCirculation))
 
@@ -301,53 +317,52 @@ const Dashboard = () => {
     // const concentractions = Object.keys(json?.concentration).map((key) => json?.concentration[key])
     // eslint-disable-next-line no-return-assign, no-param-reassign
     // const avgConentraction = concentractions.reduce((acc, cur) => (acc += cur), 0) / concentractions.length
-    const avgConentraction = 6991.59
-    setData({ ...dashboard, avgConentraction })
+
     
   }, [pair, usdtAddress,currentCirculationSupply])
 
-  useEffect(() => {
-    if (pair && !gettingPair)
-      getPair()
-  }, [pair,currentCirculationSupply,gettingPair])
+  // useEffect(() => {
+  //   if (pair && !gettingPair)
+  //     getPair()
+  // }, [pair,currentCirculationSupply,gettingPair])
 
-  useEffect(()=>{
-    if (dfs && !gettingDFSBalance) {
-      setGettingDFSBalance(true)
-      getDFSBalances()
+  // useEffect(()=>{
+  //   if (dfsSavings && !gettingSavings){
+  //     setGettingSavings(true)
+  //     getSavings()
+  //   }
+  // },[dfsSavings,gettingSavings])
 
-    }
-  },[dfs,gettingDFSBalance])
+
+  // useEffect(()=>{
+  //   if (dfs && !gettingDFSBalance) {
+  //     setGettingDFSBalance(true)
+  //     getDFSBalances()
+
+  //   }
+  // },[dfs,gettingDFSBalance])
 
 
-  
-  useEffect(()=>{
-    if (dfsSavings && !gettingSavings){
-      setGettingSavings(true)
-      getSavings()
-    }
-  },[dfsSavings,gettingSavings])
+  // useEffect(()=>{
+  //   if (bond && !gettingBond){
+  //     setGettingBond(true)
+  //     getBond()
+  //   }
+  // },[bond,gettingBond])
 
-  useEffect(()=>{
-    if (bond && !gettingBond){
-      setGettingBond(true)
-      getBond()
-    }
-  },[bond,gettingBond])
-
-  useEffect(()=>{
-    if (dfsMining && !gettingMining){
-      setGettingMining(true)
-      getMining()
-    }
-  },[dfsMining,gettingMining])
+  // useEffect(()=>{
+  //   if (dfsMining && !gettingMining){
+  //     setGettingMining(true)
+  //     getMining()
+  //   }
+  // },[dfsMining,gettingMining])
 
   const time = new Date()
 
   const expansionFund = foundationDFS && data?.marketPrice && (parseFloat(formatUnits(foundationDFS)) * data?.marketPrice).toFixed(2)
   const callFactor= miningTotalCalls && dfsTotalCalls && bondTotalCalls && savingsTotalCalls && miningTotalCalls.add(dfsTotalCalls).add(bondTotalCalls).add(savingsTotalCalls)
   
-  const debtRatio =  currentCirculationSupply && (parseFloat(formatUnits(totalPayout.sub(bondUsed))) * 100) / parseFloat(formatUnits(currentCirculationSupply))
+  const debtRatio =  currentCirculationSupply && totalPayout && (parseFloat(formatUnits(totalPayout?.sub(bondUsed))) * 100) / parseFloat(formatUnits(currentCirculationSupply))
   return (
     <div className="dashboard-view">
       <Typography variant="h4" style={{ fontWeight: 700, overflow: 'hidden', color: '#fff' }}>
@@ -473,7 +488,7 @@ const Dashboard = () => {
                           >
                             <DataCell
                               title={t('Household savings rate')}
-                              data={ `${houseHoldSavingsRate}%`}
+                              data={ houseHoldSavingsRate && `${houseHoldSavingsRate}%`}
                               progressColor="#f200ff"
                             />
                           </div>
@@ -485,7 +500,7 @@ const Dashboard = () => {
                           >
                             <DataCell
                               title={t('DSGE suitability')}
-                              data={`${DSGE}%`}
+                              data={DSGE && `${DSGE}%`}
                               progressColor="#01ffed"
                             />
                           </div>

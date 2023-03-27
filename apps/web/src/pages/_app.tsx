@@ -47,7 +47,7 @@ BigNumber.config({
 })
 
 function GlobalHooks() {
-  usePollBlockNumber()
+  // usePollBlockNumber()
   useEagerConnect()
   useUserAgent()
   useAccountEventListener()
@@ -57,7 +57,7 @@ function GlobalHooks() {
 }
 
 function MPGlobalHooks() {
-  usePollBlockNumber()
+  // usePollBlockNumber()
   useEagerConnectMP()
   useUserAgent()
   useAccountEventListener()

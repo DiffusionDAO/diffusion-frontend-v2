@@ -76,7 +76,7 @@ const Bond = () => {
   const dfsAddress = getDFSAddress(chainId)
   const pair = usePairContract(pairAddress)
 
-  const { data, status } = useSWR('setPriceDiscount', async () => {
+  const { data, status } = useSWR('setMarketPriceAndCentral', async () => {
     const bondDiscount = await bond.discount()
     setDiscount(bondDiscount.toNumber())
 
@@ -85,17 +85,23 @@ const Bond = () => {
      
     // console.log("numerator:",numerator.toString())
     const marketPriceNumber = parseFloat(formatUnits(numerator)) / parseFloat(formatUnits(denominator)) 
-    bondDatas[0].price = formatNumber(marketPriceNumber * (10000 - bondDiscount) / 10000,2)
+    const bondPrice = marketPriceNumber * (10000 - bondDiscount) / 10000
+    bondDatas[0].price = formatNumber(bondPrice,2)
     bondDatas[0].discount = bondDiscount
 
     setMarketPrice(marketPriceNumber)
     const totalPayout = (await bond.totalPayout()).add(await bondOld.totalPayout())
+    console.log("totalPayout:",formatUnits(totalPayout,'ether'))
 
-    const previousCentral = 2641974.61
-    const previousNumerator = BigNumber.from("91036305171576597655545")
+    const central = bondPrice * parseFloat(formatUnits(totalPayout,"ether")) + 2350000
+    setCentral(central)
+
     // setCentral(parseFloat(formatUnits(totalPayout.mul(8))) * marketPriceNumber )
-    const diffNumerator = parseFloat(formatUnits(numerator.sub(previousNumerator ),"ether"))
-    setCentral(previousCentral + diffNumerator)
+
+    // const previousCentral = 2641974.61
+    // const previousNumerator = BigNumber.from("91036305171576597655545")
+    // const diffNumerator = parseFloat(formatUnits(numerator.sub(previousNumerator ),"ether"))
+    // setCentral(previousCentral + diffNumerator)
 
     
   })
@@ -138,7 +144,6 @@ const Bond = () => {
     bond
       .vestingTerm()
       .then((res) => {
-        console.log("terms:",res)
         if (res / (24 * 3600) >= 1) {
           dfsUsdt.duration = `${formatNumber(res / (24 * 3600), 2)} Days`
         } else if (res / 3600 >= 1) {
@@ -151,12 +156,7 @@ const Bond = () => {
         console.log(error.reason ?? error.data?.message ?? error.message)
       })
     setBondData([dfsUsdt, ...bondDatas.slice(1)])
-    // dfs
-    //   .totalSupply()
-    //   .then((res) => setDfsTotalSupply(res * marketPrice))
-    //   .catch((error) => {
-    //     console.log(error.reason ?? error.data?.message ?? error.message)
-    //   })
+
   }, [account, marketPrice])
   return (
     <BondPageWrap>
