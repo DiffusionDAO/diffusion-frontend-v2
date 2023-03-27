@@ -1,7 +1,7 @@
 import { Grid, Typography, CircularProgress } from '@material-ui/core'
 import { useTranslation } from '@pancakeswap/localization'
 import { makeStyles } from '@material-ui/core/styles'
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import useSWR from 'swr'
 import { Skeleton, useMatchBreakpoints } from '@pancakeswap/uikit'
 import { useBondContract, useBondOldContract, useDFSContract, useDFSMiningContract, useDFSSavingsContract, usePairContract } from 'hooks/useContract'
@@ -100,7 +100,7 @@ const Dashboard = () => {
   const [bondUsed, setBondUsed] = useState<BigNumber>(BigNumber.from(0))
   const [bondRewardWithdrawed, setBondRewardWithdrawed] = useState<BigNumber>(BigNumber.from(0))
   const [bondTotalCalls, setBondTotalCalls] = useState<BigNumber>()
-  
+
   // const [debtRatio, setDebtRatio] = useState<number>()
 
   const [gettingDFSBalance, setGettingDFSBalance] = useState<boolean>(false)
@@ -110,6 +110,8 @@ const Dashboard = () => {
   const [gettingPair, setGettingPair] = useState<boolean>(false)
   const [totalPayout, setTotalPayout] = useState<BigNumber>()
   const [tvl, setTvl] = useState<BigNumber>()
+  const [numerator, setNumerator] = useState<BigNumber>()
+  const [marketPrice, setMarketPrice] = useState<number>()
 
   const [holderLength, setHolderLength] = useState<number>(undefined)
   // const [data, setData] = useState<any>({})
@@ -122,27 +124,17 @@ const Dashboard = () => {
   const dfsAddress = getDFSAddress(chainId)
   const usdtAddress = getUSDTAddress(chainId)
 
-  const {data, mutate} = useSWR('getDashboard',async()=>{
-    const dashboard = {
-      marketPrice:0,
-      solitaryReserves: undefined,
-      inflationRate: undefined,
-    }
+  const { data, mutate } = useSWR('getDashboard', async () => {
     if (pair) {
       const reserves = await pair.getReserves()
       const [numerator, denominator] = usdtAddress.toLowerCase() < dfsAddress.toLowerCase() ? [reserves[0], reserves[1]] : [reserves[1], reserves[0]]
+      setNumerator(numerator)
       setTvl(numerator.mul(2).add(parseEther("10000")))
       const marketPrice = parseFloat(formatUnits(numerator)) / parseFloat(formatUnits(denominator))
-      dashboard.marketPrice = marketPrice
+      setMarketPrice(marketPrice)
 
-      if (currentCirculationSupply?.gt(0)) {
-        dashboard.solitaryReserves = parseFloat(formatUnits(numerator)) * 11 / parseFloat(formatUnits(currentCirculationSupply))
-        if (dashboard.marketPrice > 0 && dashboard.solitaryReserves > 0) {
-          dashboard.inflationRate = (dashboard.marketPrice - dashboard.solitaryReserves) / dashboard.marketPrice
-        }
-      }
     }
-    if (dfsSavings ) {
+    if (dfsSavings) {
       const savingsTotalCalls = await dfsSavings.totalCalls()
       setSavingsTotalCalls(savingsTotalCalls)
       setDSGE(await dfsSavings.DSGE())
@@ -150,7 +142,7 @@ const Dashboard = () => {
       setWithdrawedSavingReward(await dfsSavings.withdrawedSavingReward())
     }
 
-    if (bond ) {
+    if (bond) {
       const buyers = await bond.getBuyers()
       let bondUsed = BigNumber.from(0)
       let bondRewardWithdrawed = BigNumber.from(0)
@@ -167,8 +159,8 @@ const Dashboard = () => {
       setTotalPayout(totalPayout)
       const totalCirculationSupply = totalPayout
         .mul(1315)
-        .div(1000).mul(11)
-        // .add(parseEther("766")).mul(11)
+        .div(1000)
+        .add(parseEther("158200"))
 
       setTotalCirculationSupply(totalCirculationSupply)
       const bondTotalCalls = await bond.totalCalls()
@@ -176,9 +168,9 @@ const Dashboard = () => {
       setBondRewardWithdrawed(bondRewardWithdrawed)
       setTargetInflationRate(await bond.targetInflationRate())
     }
-    if (dfs ) {
+    if (dfs) {
       const foundationDFS = await dfs.balanceOf(foundation)
-      
+
       setFoundationDFS(foundationDFS)
       const elementaryUnusedMintAddressDfs = await dfs.balanceOf(elementaryUnusedMintAddress)
       setElementaryUnusedMintAddressDfs(elementaryUnusedMintAddressDfs)
@@ -217,6 +209,7 @@ const Dashboard = () => {
       const receiver = await bond.receiver()
       const receiverDFS = await dfs.balanceOf(receiver)
 
+
       const currentCirculationSupply = dfsTotalSupply
         .sub(genesisDFS)
         .sub(receiverDFS)
@@ -228,141 +221,89 @@ const Dashboard = () => {
         .sub(elementaryUnusedMintAddressDfs)
         .sub(advancedUnusedMintAddressDfs)
         .sub(elementaryMintAddressDfs)
-        .sub(advancedMintAddressDfs).mul(11)
-        // .add(parseEther("436")).mul(11)
+        .sub(advancedMintAddressDfs)
+
 
       setCurrentCirculationSupply(currentCirculationSupply)
 
       const getHoldersLength = await dfs.getHoldersLength()
       setHolderLength(getHoldersLength)
-  
+
       const dfsTotalCalls = await dfs.totalCalls()
       setDfsTotalCalls(dfsTotalCalls)
     }
 
 
-
-
-    if (dfsMining ) {
+    if (dfsMining) {
       const miningTotalCalls = await dfsMining.totalCalls()
       setMiningTotalCalls(miningTotalCalls)
       setWithdrawedSocialReward(await dfsMining.withdrawedSocialReward())
     }
 
-    
+
     const avgConentraction = 6991.59
-    return { ...dashboard, avgConentraction }
+    return { avgConentraction }
   })
-  // const getDFSBalances = useCallback(async () => {
-    
-  // }, [gettingDFSBalance])
 
-  // const getBond = useCallback(async () => {
-    
-  // }, [bond, bondOld])
-
-  // const getSavings = useCallback(async () => {
-
-  // }, [dfsSavings,gettingSavings])
-
-  // const getMining = useCallback(async () => {
-
-  // }, [dfsMining])
 
   const clickTab = (tab: string) => {
     setActiveTab(tab)
   }
 
-  const getPair = useCallback(async () => {
+  // console.log("totalCirculation:",formatUnits(totalCirculation))
 
-    // console.log("totalCirculation:",formatUnits(totalCirculation))
+  // const telegram = await fetch(telegramLink)
+  // const telegramJson = await telegram.json()
+  // const telegramFollowers = telegramJson.result
+  // console.log('telegramFollowers:', telegramFollowers)
 
-    // const telegram = await fetch(telegramLink)
-    // const telegramJson = await telegram.json()
-    // const telegramFollowers = telegramJson.result
-    // console.log('telegramFollowers:', telegramFollowers)
+  // const discord = await fetch(discordLink)
+  // const discordJson = await discord.json()
+  // const discordFollowers = discordJson.approximate_member_count
+  // console.log('discordFollowers:', discordFollowers)
 
-    // const discord = await fetch(discordLink)
-    // const discordJson = await discord.json()
-    // const discordFollowers = discordJson.approximate_member_count
-    // console.log('discordFollowers:', discordFollowers)
+  // const twitter = await fetch(twitterLink)
+  // const twitterJson = await twitter.json()
+  // const twitterFollowers = twitterJson[0].followers_count
+  // console.log('twitterFollowers:', twitterFollowers)
 
-    // const twitter = await fetch(twitterLink)
-    // const twitterJson = await twitter.json()
-    // const twitterFollowers = twitterJson[0].followers_count
-    // console.log('twitterFollowers:', twitterFollowers)
+  // const medium = await fetch(mediumLink)
+  // const text = await medium.text()
+  // const mediumJson = JSON.parse(text.replace('])}while(1);</x>', ''))
+  // console.log(mediumJson)
+  // const userId = mediumJson.payload.user.userId
+  // const mediumFollowers = mediumJson.payload.references.SocialStats.userId.usersFollowedByCount
+  // console.log('mediumFollowers:', mediumFollowers)
 
-    // const medium = await fetch(mediumLink)
-    // const text = await medium.text()
-    // const mediumJson = JSON.parse(text.replace('])}while(1);</x>', ''))
-    // console.log(mediumJson)
-    // const userId = mediumJson.payload.user.userId
-    // const mediumFollowers = mediumJson.payload.references.SocialStats.userId.usersFollowedByCount
-    // console.log('mediumFollowers:', mediumFollowers)
+  // const followers = {
+  //   concentration: {
+  //     telegram: telegramFollowers,
+  //     discord: discordFollowers,
+  //     twitter: twitterFollowers,
+  //     medium: mediumFollowers,
+  //   },
+  // }
+  // console.log(followers)
+  // return followers
 
-    // const followers = {
-    //   concentration: {
-    //     telegram: telegramFollowers,
-    //     discord: discordFollowers,
-    //     twitter: twitterFollowers,
-    //     medium: mediumFollowers,
-    //   },
-    // }
-    // console.log(followers)
-    // return followers
+  // const response = await fetch('https://middle.diffusiondao.org/dashboard')
+  // const json = await response.json()
 
-    // const response = await fetch('https://middle.diffusiondao.org/dashboard')
-    // const json = await response.json()
-
-    // const concentractions = Object.keys(json?.concentration).map((key) => json?.concentration[key])
-    // eslint-disable-next-line no-return-assign, no-param-reassign
-    // const avgConentraction = concentractions.reduce((acc, cur) => (acc += cur), 0) / concentractions.length
-
-    
-  }, [pair, usdtAddress,currentCirculationSupply])
-
-  // useEffect(() => {
-  //   if (pair && !gettingPair)
-  //     getPair()
-  // }, [pair,currentCirculationSupply,gettingPair])
-
-  // useEffect(()=>{
-  //   if (dfsSavings && !gettingSavings){
-  //     setGettingSavings(true)
-  //     getSavings()
-  //   }
-  // },[dfsSavings,gettingSavings])
+  // const concentractions = Object.keys(json?.concentration).map((key) => json?.concentration[key])
+  // eslint-disable-next-line no-return-assign, no-param-reassign
+  // const avgConentraction = concentractions.reduce((acc, cur) => (acc += cur), 0) / concentractions.length
 
 
-  // useEffect(()=>{
-  //   if (dfs && !gettingDFSBalance) {
-  //     setGettingDFSBalance(true)
-  //     getDFSBalances()
 
-  //   }
-  // },[dfs,gettingDFSBalance])
-
-
-  // useEffect(()=>{
-  //   if (bond && !gettingBond){
-  //     setGettingBond(true)
-  //     getBond()
-  //   }
-  // },[bond,gettingBond])
-
-  // useEffect(()=>{
-  //   if (dfsMining && !gettingMining){
-  //     setGettingMining(true)
-  //     getMining()
-  //   }
-  // },[dfsMining,gettingMining])
 
   const time = new Date()
 
-  const expansionFund = foundationDFS && data?.marketPrice && (parseFloat(formatUnits(foundationDFS)) * data?.marketPrice).toFixed(2)
-  const callFactor= miningTotalCalls && dfsTotalCalls && bondTotalCalls && savingsTotalCalls && miningTotalCalls.add(dfsTotalCalls).add(bondTotalCalls).add(savingsTotalCalls)
-  
-  const debtRatio =  currentCirculationSupply && totalPayout && (parseFloat(formatUnits(totalPayout?.sub(bondUsed))) * 100) / parseFloat(formatUnits(currentCirculationSupply))
+  const expansionFund = useMemo(() =>foundationDFS.gt(0) &&  marketPrice > 0 && parseFloat(formatUnits(foundationDFS)) * marketPrice, [foundationDFS, marketPrice])
+  const callFactor = useMemo(() => miningTotalCalls && dfsTotalCalls && bondTotalCalls && savingsTotalCalls && miningTotalCalls.add(dfsTotalCalls).add(bondTotalCalls).add(savingsTotalCalls), [miningTotalCalls, dfsTotalCalls, bondTotalCalls, savingsTotalCalls])
+
+  const solitaryReserves = useMemo(() => numerator && currentCirculationSupply && parseFloat(formatUnits(numerator)) / parseFloat(formatUnits(currentCirculationSupply)), [currentCirculationSupply, numerator])
+  const inflationRate = useMemo(() => marketPrice && solitaryReserves && (marketPrice - solitaryReserves) / marketPrice, [marketPrice, solitaryReserves])
+  const debtRatio = useMemo(() => totalPayout && currentCirculationSupply && (parseFloat(formatUnits(totalPayout?.sub(bondUsed))) * 100) / parseFloat(formatUnits(currentCirculationSupply?.add(parseEther("65000")))), [currentCirculationSupply, totalPayout])
   return (
     <div className="dashboard-view">
       <Typography variant="h4" style={{ fontWeight: 700, overflow: 'hidden', color: '#fff' }}>
@@ -419,7 +360,7 @@ const Dashboard = () => {
                             />
                             <DataCell
                               title={t('Solitary Reserve')}
-                              data={data?.solitaryReserves && `$${formatNumber(data?.solitaryReserves, 2)}`}
+                              data={solitaryReserves && `$${formatNumber(solitaryReserves, 2)}`}
                             />
                           </div>
                         </Grid>
@@ -429,13 +370,13 @@ const Dashboard = () => {
                               title={t('Current circulation volume')}
                               data={
                                 currentCirculationSupply &&
-                                `${formatBigNumber(currentCirculationSupply, 2)} DFS`
+                                `${formatBigNumber(currentCirculationSupply.add(parseEther("65000")), 2)} DFS`
                               }
                               imgUrl="/images/dashboard/rf.svg"
                             />
                             <DataCell
                               title={t('Expansion Fund')}
-                              data={expansionFund && `$${expansionFund}`}
+                              data={expansionFund > 0 ? `$${expansionFund?.toFixed(2)}`: undefined}
                               imgUrl="/images/dashboard/rm.svg"
                             />
                           </div>
@@ -488,7 +429,7 @@ const Dashboard = () => {
                           >
                             <DataCell
                               title={t('Household savings rate')}
-                              data={ houseHoldSavingsRate && `${houseHoldSavingsRate}%`}
+                              data={houseHoldSavingsRate && `${houseHoldSavingsRate}%`}
                               progressColor="#f200ff"
                             />
                           </div>
@@ -509,7 +450,7 @@ const Dashboard = () => {
                           <div className="cell-sub-item">
                             <DataCell
                               title={t('Inflation')}
-                              data={data?.inflationRate && `${(data?.inflationRate * 100).toFixed(2)}%`}
+                              data={inflationRate && `${(inflationRate * 100).toFixed(2)}%`}
                               progressColor="#f5d700"
                             />
                           </div>
@@ -569,7 +510,7 @@ const Dashboard = () => {
                       <div className="cell-sub-item">
                         <DataCell
                           title={t('Expansion Fund')}
-                          data={expansionFund && `$${expansionFund}`}
+                          data={expansionFund > 0 ? `$${expansionFund?.toFixed(2)}`: undefined}
                           imgUrl="/images/dashboard/rz.svg"
                         />
                       </div>

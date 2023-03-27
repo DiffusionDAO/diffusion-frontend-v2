@@ -83,27 +83,17 @@ const Bond = () => {
     const reserves = await pair.getReserves()
     const [numerator, denominator] = usdtAddress.toLowerCase() < dfsAddress.toLowerCase() ? [reserves[0], reserves[1]] : [reserves[1], reserves[0]]
      
-    // console.log("numerator:",numerator.toString())
     const marketPriceNumber = parseFloat(formatUnits(numerator)) / parseFloat(formatUnits(denominator)) 
+    setMarketPrice(marketPriceNumber)
+
     const bondPrice = marketPriceNumber * (10000 - bondDiscount) / 10000
     bondDatas[0].price = formatNumber(bondPrice,2)
     bondDatas[0].discount = bondDiscount
 
-    setMarketPrice(marketPriceNumber)
     const totalPayout = (await bond.totalPayout()).add(await bondOld.totalPayout())
-    console.log("totalPayout:",formatUnits(totalPayout,'ether'))
 
     const central = bondPrice * parseFloat(formatUnits(totalPayout,"ether")) + 2350000
     setCentral(central)
-
-    // setCentral(parseFloat(formatUnits(totalPayout.mul(8))) * marketPriceNumber )
-
-    // const previousCentral = 2641974.61
-    // const previousNumerator = BigNumber.from("91036305171576597655545")
-    // const diffNumerator = parseFloat(formatUnits(numerator.sub(previousNumerator ),"ether"))
-    // setCentral(previousCentral + diffNumerator)
-
-    
   })
 
   const openBondModal = (item) => {
