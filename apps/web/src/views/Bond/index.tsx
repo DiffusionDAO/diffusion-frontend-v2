@@ -66,7 +66,7 @@ const Bond = () => {
   const [bondItem, setBondItem] = useState<any>(null)
   const [dfsTotalSupply, setDfsTotalSupply] = useState<number>()
   const [marketPrice, setMarketPrice] = useState<number>(0)
-  const [central, setCentral] = useState<number>(0)
+  const [central, setCentral] = useState<number>()
   const bond = useBondContract()
   const bondOld = useBondOldContract()
   const dfs = useDFSContract()
@@ -171,9 +171,9 @@ const Bond = () => {
         <OverviewCard isMobile={isMobile}>
           <OverviewCardItem>
             <OverviewCardItemTitle>{t('Central Financial Agreement Assets')}</OverviewCardItemTitle>
-            { marketPrice > 0 ? (
+            { marketPrice > 0 && central ? (
               <OverviewCardItemContent isMobile={isMobile}>
-                ${central.toFixed(2)}
+                ${central?.toFixed(2)}
               </OverviewCardItemContent>
             ) : (
               <Skeleton />

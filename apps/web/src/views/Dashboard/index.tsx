@@ -1,11 +1,11 @@
 import { Grid, Typography, CircularProgress } from '@material-ui/core'
 import { useTranslation } from '@pancakeswap/localization'
 import { makeStyles } from '@material-ui/core/styles'
-import { useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import useSWR from 'swr'
 import { Skeleton, useMatchBreakpoints } from '@pancakeswap/uikit'
-import { useBondContract,useBondOldContract, useDFSContract, useDFSMiningContract, useDFSSavingsContract, usePairContract } from 'hooks/useContract'
-import {  getDFSAddress, getPairAddress, getUSDTAddress } from 'utils/addressHelpers'
+import { useBondContract, useBondOldContract, useDFSContract, useDFSMiningContract, useDFSSavingsContract, usePairContract } from 'hooks/useContract'
+import { getDFSAddress, getPairAddress, getUSDTAddress } from 'utils/addressHelpers'
 import { BigNumber } from '@ethersproject/bignumber'
 import { formatUnits, parseEther } from '@ethersproject/units'
 import { formatBigNumber, formatNumber } from '@pancakeswap/utils/formatBalance'
@@ -71,114 +71,197 @@ const Dashboard = () => {
   const { isMobile } = useMatchBreakpoints()
   const classes = useStyles()
   const [activeTab, setActiveTab] = useState<string>('Overview')
-  const [holderLength, setHolderLength] = useState<number>(undefined)
-  const pair = usePairContract(getPairAddress(chainId))
+  const [elementaryUnusedMintAddressDfs, setElementaryUnusedMintAddressDfs] = useState<BigNumber>(BigNumber.from(0))
+  const [foundationDFS, setFoundationDFS] = useState<BigNumber>(BigNumber.from(0))
+  const [advancedUnusedMintAddressDfs, setAdvancedUnusedMintAddressDfs] = useState<BigNumber>(BigNumber.from(0))
+  const [elementaryMintAddressDfs, setElementaryMintAddressDfs] = useState<BigNumber>(BigNumber.from(0))
+  const [advancedMintAddressDfs, setAdvancedMintAddressDfs] = useState<BigNumber>(BigNumber.from(0))
+  const [bondDfs, setBondDfs] = useState<BigNumber>(BigNumber.from(0))
+  const [unstakeNFTDFS, setUnstakeNFTDFS] = useState<BigNumber>(BigNumber.from(0))
+  const [nftMarketDestroyedDFS, setNftMarketDestroyedDFS] = useState<BigNumber>(BigNumber.from(0))
+  const [daoDFS, setDaoDFS] = useState<BigNumber>(BigNumber.from(0))
+  const [genesisDFS, setGenesisDFS] = useState<BigNumber>(BigNumber.from(0))
+  const [dfsTotalCalls, setDfsTotalCalls] = useState<BigNumber>()
+  const [dfsTotalSupply, setDfsTotalSupply] = useState<BigNumber>(BigNumber.from(0))
 
-  const clickTab = (tab: string) => {
-    setActiveTab(tab)
-  }
+  const [DSGE, setDSGE] = useState<string>('0')
+  const [houseHoldSavingsRate, setHouseHoldSavingsRate] = useState<string>('0')
+  const [savingsTotalCalls, setSavingsTotalCalls] = useState<BigNumber>()
+
+  const [currentCirculationSupply, setCurrentCirculationSupply] = useState<BigNumber>()
+  const [totalCirculationSupply, setTotalCirculationSupply] = useState<BigNumber>()
+  const [targetInflationRate, setTargetInflationRate] = useState<string>("0")
+
+  const [withdrawedSavingReward, setWithdrawedSavingReward] = useState<BigNumber>(BigNumber.from(0))
+
+  const [withdrawedSocialReward, setWithdrawedSocialReward] = useState<BigNumber>(BigNumber.from(0))
+  const [miningTotalCalls, setMiningTotalCalls] = useState<BigNumber>()
+
+  const [bondUsed, setBondUsed] = useState<BigNumber>(BigNumber.from(0))
+  const [bondRewardWithdrawed, setBondRewardWithdrawed] = useState<BigNumber>(BigNumber.from(0))
+  const [bondTotalCalls, setBondTotalCalls] = useState<BigNumber>()
+  
+  // const [debtRatio, setDebtRatio] = useState<number>()
+
+  const [gettingDFSBalance, setGettingDFSBalance] = useState<boolean>(false)
+  const [gettingSavings, setGettingSavings] = useState<boolean>(false)
+  const [gettingBond, setGettingBond] = useState<boolean>(false)
+  const [gettingMining, setGettingMining] = useState<boolean>(false)
+  const [gettingPair, setGettingPair] = useState<boolean>(false)
+  const [totalPayout, setTotalPayout] = useState<BigNumber>()
+
+  const [holderLength, setHolderLength] = useState<number>(undefined)
+  const [data, setData] = useState<any>({})
+  const pair = usePairContract(getPairAddress(chainId))
+  const dfs = useDFSContract()
   const dfsMining = useDFSMiningContract()
   const dfsSavings = useDFSSavingsContract()
-  const dfs = useDFSContract()
   const bond = useBondContract()
   const bondOld = useBondOldContract()
   const dfsAddress = getDFSAddress(chainId)
   const usdtAddress = getUSDTAddress(chainId)
 
-  const { data } = useSWR('dashboard', async () => {
+  const getDFSBalances = useCallback(async () => {
+    if (dfs && !gettingDFSBalance) {
+      const foundationDFS = await dfs.balanceOf(foundation)
+      
+      setFoundationDFS(foundationDFS)
+      const elementaryUnusedMintAddressDfs = await dfs.balanceOf(elementaryUnusedMintAddress)
+      setElementaryUnusedMintAddressDfs(elementaryUnusedMintAddressDfs)
+
+      const advancedUnusedMintAddressDfs = await dfs.balanceOf(advancedUnusedMintAddress)
+      setAdvancedUnusedMintAddressDfs(advancedUnusedMintAddressDfs)
+
+      const elementaryMintAddressDfs = await dfs.balanceOf(elementaryMintAddress)
+      setElementaryMintAddressDfs(elementaryMintAddressDfs)
+
+      const advancedMintAddressDfs = await dfs.balanceOf(advancedMintAddress)
+      setAdvancedMintAddressDfs(advancedMintAddressDfs)
+
+      const bondDfs = (await dfs.balanceOf(bond.address)).add(await dfs.balanceOf(bondOld.address))
+      setBondDfs(bondDfs)
+
+      const unstakeNFTDFS = await dfs.balanceOf(unstakeNFTAddress)
+      setUnstakeNFTDFS(unstakeNFTDFS)
+
+      const nftMarketDestroyedDFS = await dfs.balanceOf(nftMarketDestroyAddress)
+      setNftMarketDestroyedDFS(nftMarketDestroyedDFS)
+
+      const daoDFS = (await Promise.all(dao.map(async (d) => dfs.balanceOf(d)))).reduce((accum, curr) => {
+        // eslint-disable-next-line no-return-assign, no-param-reassign
+        accum = accum.add(curr)
+        return accum
+      }, BigNumber.from(0))
+      setDaoDFS(daoDFS)
+
+      const genesisDFS = await dfs.balanceOf(await dfs.genesis())
+      setGenesisDFS(genesisDFS)
+
+      const dfsTotalSupply = await dfs.totalSupply()
+      setDfsTotalSupply(dfsTotalSupply)
+
+      const receiver = await bond.receiver()
+      const receiverDFS = await dfs.balanceOf(receiver)
+
+      const currentCirculationSupply = dfsTotalSupply
+        .sub(genesisDFS)
+        .sub(receiverDFS)
+        .sub(daoDFS)
+        .sub(foundationDFS)
+        .sub(bondDfs)
+        .sub(unstakeNFTDFS)
+        .sub(nftMarketDestroyedDFS)
+        .sub(elementaryUnusedMintAddressDfs)
+        .sub(advancedUnusedMintAddressDfs)
+        .sub(elementaryMintAddressDfs)
+        .sub(advancedMintAddressDfs)
+        .add(parseEther("436")).mul(11)
+
+      setCurrentCirculationSupply(currentCirculationSupply)
+
+      const getHoldersLength = await dfs.getHoldersLength()
+      setHolderLength(getHoldersLength)
+  
+      const dfsTotalCalls = await dfs.totalCalls()
+      setDfsTotalCalls(dfsTotalCalls)
+    }
+  }, [gettingDFSBalance])
+
+  const getBond = useCallback(async () => {
+    if (bond) {
+      console.log("getBond")
+
+      const buyers = await bond.getBuyers()
+      let bondUsed = BigNumber.from(0)
+      let bondRewardWithdrawed = BigNumber.from(0)
+      await Promise.all(
+        buyers?.map(async (buyer) => {
+          const referral = await bond.addressToReferral(buyer)
+          bondUsed = bondUsed.add(referral.bondUsed)
+          bondRewardWithdrawed = bondRewardWithdrawed.add(referral.bondRewardWithdrawed)
+        }),
+      )
+      setBondUsed(bondUsed)
+      const totalPayout = (await bond.totalPayout()).add(await bondOld.totalPayout())
+
+      setTotalPayout(totalPayout)
+      const totalCirculationSupply = totalPayout
+        .mul(1315)
+        .div(1000)
+        .add(parseEther("766")).mul(11)
+
+      setTotalCirculationSupply(totalCirculationSupply)
+      const bondTotalCalls = await bond.totalCalls()
+      setBondTotalCalls(bondTotalCalls)
+      setBondRewardWithdrawed(bondRewardWithdrawed)
+      setTargetInflationRate(await bond.targetInflationRate())
+    }
+  }, [bond, bondOld])
+
+  const getSavings = useCallback(async () => {
+    if (dfsSavings && !gettingSavings) {
+      console.log("getSavings")
+      const savingsTotalCalls = await dfsSavings.totalCalls()
+      setSavingsTotalCalls(savingsTotalCalls)
+      setDSGE(await dfsSavings.DSGE())
+      setHouseHoldSavingsRate(await dfsSavings.HouseHoldSavingsRate())
+      setWithdrawedSavingReward(await dfsSavings.withdrawedSavingReward())
+    }
+  }, [dfsSavings,gettingSavings])
+
+  const getMining = useCallback(async () => {
+    if (dfsMining) {
+      console.log("getMining")
+      const miningTotalCalls = await dfsMining.totalCalls()
+      setMiningTotalCalls(miningTotalCalls)
+      setWithdrawedSocialReward(await dfsMining.withdrawedSocialReward())
+    }
+  }, [dfsMining])
+
+  const clickTab = (tab: string) => {
+    setActiveTab(tab)
+  }
+
+  const getPair = useCallback(async () => {
+    console.log("getPair")
     const reserves = await pair.getReserves()
     const [numerator, denominator] = usdtAddress.toLowerCase() < dfsAddress.toLowerCase() ? [reserves[0], reserves[1]] : [reserves[1], reserves[0]]
     const marketPrice = parseFloat(formatUnits(numerator)) / parseFloat(formatUnits(denominator))
 
-    const DSGE = await dfsSavings.DSGE()
-    const houseHoldSavingsRate = await dfsSavings.HouseHoldSavingsRate()
-    const miningTotalCalls = await dfsMining.totalCalls()
-    const dfsTotalCalls = await dfs.totalCalls()
-    const bondTotalCalls = await bond.totalCalls()
-    const savingsTotalCalls = await dfsSavings.totalCalls()
-
-    const bondDfs = await dfs.balanceOf(bond.address)
     const dashboard = {
-      callFactor: miningTotalCalls.add(dfsTotalCalls).add(bondTotalCalls).add(savingsTotalCalls),
-      DSGE,
-      houseHoldSavingsRate,
-      tvl: BigNumber.from(0),
+      tvl: numerator.mul(2).add(parseEther("10000")),
       marketPrice,
-      foundationDFS: await dfs.balanceOf(foundation),
-      elementaryUnusedMintAddressDfs: await dfs.balanceOf(elementaryUnusedMintAddress),
-      advancedUnusedMintAddressDfs: await dfs.balanceOf(advancedUnusedMintAddress),
-      elementaryMintAddressDfs: await dfs.balanceOf(elementaryMintAddress),
-      advancedMintAddressDfs: await dfs.balanceOf(advancedMintAddress),
-      daoDFS: BigNumber.from(0),
-      bondDfs:bondDfs.add(await dfs.balanceOf(bondOld.address)) ,
-      dfsTotalSupply: await dfs.totalSupply(),
-      totalPayout: (await bond.totalPayout()).add(await bondOld.totalPayout()),
-      unstakeNFTDFS: await dfs.balanceOf(unstakeNFTAddress),
-      nftMarketDestroyedDFS: await dfs.balanceOf(nftMarketDestroyAddress),
-      withdrawedSocialReward: await dfsMining.withdrawedSocialReward(),
-      withdrawedSavingReward: await dfsSavings.withdrawedSavingReward(),
-      bondUsed: BigNumber.from(0),
-      bondRewardWithdrawed: BigNumber.from(0),
-      solitaryReserves: 0,
-      inflationRate: 0,
-      debtRatio: 0,
-      currentCirculationSupply: BigNumber.from(0),
-      totalCirculationSupply: BigNumber.from(0),
-      targetInflationRate: await bond.targetInflationRate(),
+      solitaryReserves: undefined,
+      inflationRate: undefined,
     }
-
-    dashboard.tvl = numerator.mul(2).add(parseEther("10000"))
-
-    dashboard.daoDFS = (await Promise.all(dao.map(async (d) => dfs.balanceOf(d)))).reduce((accum, curr) => {
-      // eslint-disable-next-line no-return-assign, no-param-reassign
-      accum = accum.add(curr)
-      return accum
-    }, BigNumber.from(0))
-
-    const getHoldersLength = await dfs.getHoldersLength()
-    setHolderLength(getHoldersLength)
-
-    const buyers = await bond.getBuyers()
-    await Promise.all(
-      buyers?.map(async (buyer) => {
-        const referral = await bond.addressToReferral(buyer)
-        dashboard.bondUsed = dashboard.bondUsed.add(referral.bondUsed)
-        dashboard.bondRewardWithdrawed = dashboard.bondRewardWithdrawed.add(referral.bondRewardWithdrawed)
-      }),
-    )
-    const genesis = await dfs.genesis()
-    const genesisDFS = await dfs.balanceOf(genesis)
-    const receiver = await bond.receiver()
-    const receiverDFS = await dfs.balanceOf(receiver)
-
-    dashboard.currentCirculationSupply = dashboard.dfsTotalSupply
-      .sub(genesisDFS)
-      .sub(receiverDFS)
-      .sub(dashboard.daoDFS)
-      .sub(dashboard.foundationDFS)
-      .sub(dashboard.bondDfs)
-      .sub(dashboard.unstakeNFTDFS)
-      .sub(dashboard.nftMarketDestroyedDFS)
-      .sub(dashboard.elementaryUnusedMintAddressDfs)
-      .sub(dashboard.advancedUnusedMintAddressDfs)
-      .sub(dashboard.elementaryMintAddressDfs)
-      .sub(dashboard.advancedMintAddressDfs)
-      .add(parseEther("436")).mul(11)
-
-    dashboard.totalCirculationSupply = dashboard.totalPayout
-      .mul(1315)
-      .div(1000)
-      .add(parseEther("766")).mul(11)
-
-    if (dashboard.currentCirculationSupply.gt(0)) {
-      dashboard.solitaryReserves = parseFloat(formatUnits(numerator)) * 11 / parseFloat(formatUnits(dashboard.currentCirculationSupply.sub(parseEther("436").mul(11))))
-      const debtRatio = (parseFloat(formatUnits(dashboard.totalPayout.sub(dashboard.bondUsed))) * 100) /
-        parseFloat(formatUnits(dashboard.currentCirculationSupply))
-      dashboard.debtRatio = debtRatio
+    if (currentCirculationSupply?.gt(0)) {
+      dashboard.solitaryReserves = parseFloat(formatUnits(numerator)) * 11 / parseFloat(formatUnits(currentCirculationSupply.sub(parseEther("436").mul(11))))
       if (dashboard.marketPrice > 0 && dashboard.solitaryReserves > 0) {
         dashboard.inflationRate = (dashboard.marketPrice - dashboard.solitaryReserves) / dashboard.marketPrice
       }
+      
     }
+    
 
     // console.log("totalCirculation:",formatUnits(totalCirculation))
 
@@ -213,23 +296,60 @@ const Dashboard = () => {
     //     medium: mediumFollowers,
     //   },
     // }
+    // console.log(followers)
     // return followers
 
-    const response = await fetch('https://middle.diffusiondao.org/dashboard')
-    const json = await response.json()
+    // const response = await fetch('https://middle.diffusiondao.org/dashboard')
+    // const json = await response.json()
 
-    const concentractions = Object.keys(json?.concentration).map((key) => json?.concentration[key])
+    // const concentractions = Object.keys(json?.concentration).map((key) => json?.concentration[key])
     // eslint-disable-next-line no-return-assign, no-param-reassign
-    const avgConentraction = concentractions.reduce((acc, cur) => (acc += cur), 0) / concentractions.length
-    return { ...dashboard, avgConentraction }
-  })
+    // const avgConentraction = concentractions.reduce((acc, cur) => (acc += cur), 0) / concentractions.length
+    const avgConentraction = 6991.59
+    setData({ ...dashboard, avgConentraction })
+    
+  }, [pair, usdtAddress,currentCirculationSupply])
+
+  useEffect(()=>{
+    if (dfs && !gettingDFSBalance) {
+      setGettingDFSBalance(true)
+      getDFSBalances()
+
+    }
+  },[dfs,gettingDFSBalance])
+
+  useEffect(()=>{
+    if (dfsSavings && !gettingSavings){
+      setGettingSavings(true)
+      getSavings()
+    }
+  },[dfsSavings,gettingSavings])
+
+  useEffect(()=>{
+    if (bond && !gettingBond){
+      setGettingBond(true)
+      getBond()
+    }
+  },[bond,gettingBond,currentCirculationSupply])
+
+  useEffect(()=>{
+    if (dfsMining && !gettingMining){
+      setGettingMining(true)
+      getMining()
+    }
+  },[dfsMining,gettingMining])
+
+  useEffect(() => {
+    if (pair && currentCirculationSupply?.gt(0) && !gettingPair)
+      getPair()
+  }, [pair,currentCirculationSupply,gettingPair])
 
   const time = new Date()
 
-  const expansionFund =
-    data?.foundationDFS &&
-    data?.marketPrice &&
-    (parseFloat(formatUnits(data?.foundationDFS)) * data?.marketPrice).toFixed(2)
+  const expansionFund = foundationDFS && data?.marketPrice && (parseFloat(formatUnits(foundationDFS)) * data?.marketPrice).toFixed(2)
+  const callFactor= miningTotalCalls && dfsTotalCalls && bondTotalCalls && savingsTotalCalls && miningTotalCalls.add(dfsTotalCalls).add(bondTotalCalls).add(savingsTotalCalls)
+  
+  const debtRatio =  currentCirculationSupply && (parseFloat(formatUnits(totalPayout.sub(bondUsed))) * 100) / parseFloat(formatUnits(currentCirculationSupply))
   return (
     <div className="dashboard-view">
       <Typography variant="h4" style={{ fontWeight: 700, overflow: 'hidden', color: '#fff' }}>
@@ -280,8 +400,8 @@ const Dashboard = () => {
                             <DataCell
                               title={t('Total circulation')}
                               data={
-                                data?.totalCirculationSupply &&
-                                `${formatBigNumber(data?.totalCirculationSupply, 2)} DFS`
+                                totalCirculationSupply &&
+                                `${formatBigNumber(totalCirculationSupply, 2)} DFS`
                               }
                             />
                             <DataCell
@@ -295,8 +415,8 @@ const Dashboard = () => {
                             <DataCell
                               title={t('Current circulation volume')}
                               data={
-                                data?.currentCirculationSupply &&
-                                `${formatBigNumber(data?.currentCirculationSupply, 2)} DFS`
+                                currentCirculationSupply &&
+                                `${formatBigNumber(currentCirculationSupply, 2)} DFS`
                               }
                               imgUrl="/images/dashboard/rf.svg"
                             />
@@ -335,8 +455,8 @@ const Dashboard = () => {
                             }}
                             value={8}
                           />
-                          {data?.targetInflationRate ? (
-                            <div className="ctir-data">{data?.targetInflationRate}%</div>
+                          {targetInflationRate ? (
+                            <div className="ctir-data">{targetInflationRate}%</div>
                           ) : (
                             <Skeleton width={100} />
                           )}
@@ -355,7 +475,7 @@ const Dashboard = () => {
                           >
                             <DataCell
                               title={t('Household savings rate')}
-                              data={data?.houseHoldSavingsRate && `${data?.houseHoldSavingsRate}%`}
+                              data={ `${houseHoldSavingsRate}%`}
                               progressColor="#f200ff"
                             />
                           </div>
@@ -367,7 +487,7 @@ const Dashboard = () => {
                           >
                             <DataCell
                               title={t('DSGE suitability')}
-                              data={data?.DSGE && `${data?.DSGE ?? 0}%`}
+                              data={`${DSGE}%`}
                               progressColor="#01ffed"
                             />
                           </div>
@@ -385,7 +505,7 @@ const Dashboard = () => {
                           <div className="cell-sub-item">
                             <DataCell
                               title={t('Debt ratio')}
-                              data={data?.debtRatio && `${formatNumber(data?.debtRatio ?? 0, 2)}%`}
+                              data={`${formatNumber(debtRatio ?? 0, 2)}%`}
                               progressColor="#0131ff"
                             />
                           </div>
@@ -423,7 +543,7 @@ const Dashboard = () => {
                         />
                         <DataCell
                           title={t('Call Factor')}
-                          data={data?.callFactor && data?.callFactor.toString()}
+                          data={callFactor?.toString()}
                           imgUrl="/images/dashboard/cf.png"
                           titleStyle={{ color: '#ABB6FF' }}
                           imgStyle={{ height: '85px', width: '54px' }}

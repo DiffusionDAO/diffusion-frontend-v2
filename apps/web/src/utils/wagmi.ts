@@ -48,11 +48,8 @@ const getNodeRealUrl = (networkName: string) => {
 export const { provider, chains } = configureChains(CHAINS, [
   jsonRpcProvider({
     rpc: (chain) => {
-      if (!!process.env.NEXT_PUBLIC_NODE_PRODUCTION && chain.id === bsc.id) {
-        return { http: process.env.NEXT_PUBLIC_NODE_PRODUCTION }
-      }
+        return { http: chain.rpcUrls.default }
 
-      return getNodeRealUrl(chain?.network) || { http: chain.rpcUrls.default }
     },
   }),
 ])
@@ -98,7 +95,7 @@ export const metaMaskConnector = new MetaMaskConnector({
 export const bscConnector = new BinanceWalletConnector({ chains })
 
 export const client = createClient({
-  autoConnect: false,
+  autoConnect: true,
   provider,
   connectors: [
     new SafeConnector({ chains }),
