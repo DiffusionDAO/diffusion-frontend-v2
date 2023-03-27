@@ -175,8 +175,8 @@ const Dashboard = () => {
         .sub(elementaryUnusedMintAddressDfs)
         .sub(advancedUnusedMintAddressDfs)
         .sub(elementaryMintAddressDfs)
-        .sub(advancedMintAddressDfs)
-        .add(parseEther("436")).mul(11)
+        .sub(advancedMintAddressDfs).mul(11)
+        // .add(parseEther("436")).mul(11)
 
       setCurrentCirculationSupply(currentCirculationSupply)
 
@@ -190,7 +190,6 @@ const Dashboard = () => {
 
   const getBond = useCallback(async () => {
     if (bond) {
-      console.log("getBond")
 
       const buyers = await bond.getBuyers()
       let bondUsed = BigNumber.from(0)
@@ -208,8 +207,8 @@ const Dashboard = () => {
       setTotalPayout(totalPayout)
       const totalCirculationSupply = totalPayout
         .mul(1315)
-        .div(1000)
-        .add(parseEther("766")).mul(11)
+        .div(1000).mul(11)
+        // .add(parseEther("766")).mul(11)
 
       setTotalCirculationSupply(totalCirculationSupply)
       const bondTotalCalls = await bond.totalCalls()
@@ -221,7 +220,6 @@ const Dashboard = () => {
 
   const getSavings = useCallback(async () => {
     if (dfsSavings && !gettingSavings) {
-      console.log("getSavings")
       const savingsTotalCalls = await dfsSavings.totalCalls()
       setSavingsTotalCalls(savingsTotalCalls)
       setDSGE(await dfsSavings.DSGE())
@@ -232,7 +230,6 @@ const Dashboard = () => {
 
   const getMining = useCallback(async () => {
     if (dfsMining) {
-      console.log("getMining")
       const miningTotalCalls = await dfsMining.totalCalls()
       setMiningTotalCalls(miningTotalCalls)
       setWithdrawedSocialReward(await dfsMining.withdrawedSocialReward())
@@ -244,7 +241,6 @@ const Dashboard = () => {
   }
 
   const getPair = useCallback(async () => {
-    console.log("getPair")
     const reserves = await pair.getReserves()
     const [numerator, denominator] = usdtAddress.toLowerCase() < dfsAddress.toLowerCase() ? [reserves[0], reserves[1]] : [reserves[1], reserves[0]]
     setTvl(numerator.mul(2).add(parseEther("10000")))
@@ -323,7 +319,7 @@ const Dashboard = () => {
     }
   },[dfs,gettingDFSBalance])
 
-  
+
   
   useEffect(()=>{
     if (dfsSavings && !gettingSavings){
@@ -337,7 +333,7 @@ const Dashboard = () => {
       setGettingBond(true)
       getBond()
     }
-  },[bond,gettingBond,currentCirculationSupply])
+  },[bond,gettingBond])
 
   useEffect(()=>{
     if (dfsMining && !gettingMining){
@@ -345,8 +341,6 @@ const Dashboard = () => {
       getMining()
     }
   },[dfsMining,gettingMining])
-
-
 
   const time = new Date()
 
