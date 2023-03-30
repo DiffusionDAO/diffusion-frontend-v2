@@ -4,7 +4,7 @@ import { makeStyles } from '@material-ui/core/styles'
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import useSWR from 'swr'
 import { Skeleton, useMatchBreakpoints } from '@pancakeswap/uikit'
-import { useBondContract, useBondOldContract, useDFSContract, useDFSMiningContract, useDFSSavingsContract, usePairContract } from 'hooks/useContract'
+import { useBondContract, useBondOldContract, useDashboardContract, useDFSContract, useDFSMiningContract, useDFSSavingsContract, usePairContract } from 'hooks/useContract'
 import { getDFSAddress, getPairAddress, getUSDTAddress } from 'utils/addressHelpers'
 import { BigNumber } from '@ethersproject/bignumber'
 import { formatUnits, parseEther } from '@ethersproject/units'
@@ -88,6 +88,8 @@ const Dashboard = () => {
   const [houseHoldSavingsRate, setHouseHoldSavingsRate] = useState<string>()
   const [savingsTotalCalls, setSavingsTotalCalls] = useState<BigNumber>()
 
+  const [current, setCurrent] = useState<string>()
+
   const [currentCirculationSupply, setCurrentCirculationSupply] = useState<BigNumber>()
   const [totalCirculationSupply, setTotalCirculationSupply] = useState<BigNumber>()
   const [targetInflationRate, setTargetInflationRate] = useState<string>()
@@ -112,7 +114,8 @@ const Dashboard = () => {
   const [tvl, setTvl] = useState<BigNumber>()
   const [numerator, setNumerator] = useState<BigNumber>()
   const [marketPrice, setMarketPrice] = useState<number>()
-
+  const [solitaryReserve, setSolitaryReserve] = useState<string>()
+  
   const [holderLength, setHolderLength] = useState<number>(undefined)
   // const [data, setData] = useState<any>({})
   const pair = usePairContract(getPairAddress(chainId))
@@ -121,6 +124,7 @@ const Dashboard = () => {
   const dfsSavings = useDFSSavingsContract()
   const bond = useBondContract()
   const bondOld = useBondOldContract()
+  const dashboard = useDashboardContract()
   const dfsAddress = getDFSAddress(chainId)
   const usdtAddress = getUSDTAddress(chainId)
 
@@ -129,7 +133,8 @@ const Dashboard = () => {
       const reserves = await pair.getReserves()
       const [numerator, denominator] = usdtAddress.toLowerCase() < dfsAddress.toLowerCase() ? [reserves[0], reserves[1]] : [reserves[1], reserves[0]]
       setNumerator(numerator)
-      setTvl(numerator.mul(2).add(parseEther("10000")))
+      const tvl = await dashboard.tvl()
+      setTvl(numerator.mul(2).add(parseEther("10000")).add(parseEther(tvl)))
       const marketPrice = parseFloat(formatUnits(numerator)) / parseFloat(formatUnits(denominator))
       setMarketPrice(marketPrice)
 
@@ -157,10 +162,13 @@ const Dashboard = () => {
       const totalPayout = (await bond.totalPayout()).add(await bondOld.totalPayout())
 
       setTotalPayout(totalPayout)
+
+      const totalCirculation = await dashboard.totalCirculation()
       const totalCirculationSupply = totalPayout
         .mul(1315)
         .div(1000)
-        .add(parseEther("158200"))
+        .add(parseEther("158200")).add(parseEther(totalCirculation))
+
 
       setTotalCirculationSupply(totalCirculationSupply)
       const bondTotalCalls = await bond.totalCalls()
@@ -209,7 +217,6 @@ const Dashboard = () => {
       const receiver = await bond.receiver()
       const receiverDFS = await dfs.balanceOf(receiver)
 
-
       const currentCirculationSupply = dfsTotalSupply
         .sub(genesisDFS)
         .sub(receiverDFS)
@@ -223,8 +230,11 @@ const Dashboard = () => {
         .sub(elementaryMintAddressDfs)
         .sub(advancedMintAddressDfs)
 
+      const currentCirculation = await dashboard.currentCirculation()
+      setCurrentCirculationSupply(currentCirculationSupply.add(parseEther(currentCirculation)))
 
-      setCurrentCirculationSupply(currentCirculationSupply)
+      const solitaryReserve = await dashboard.solitaryReserve()
+      setSolitaryReserve(solitaryReserve)
 
       const getHoldersLength = await dfs.getHoldersLength()
       setHolderLength(getHoldersLength)
@@ -301,7 +311,7 @@ const Dashboard = () => {
   const expansionFund = useMemo(() =>foundationDFS.gt(0) &&  marketPrice > 0 && parseFloat(formatUnits(foundationDFS)) * marketPrice, [foundationDFS, marketPrice])
   const callFactor = useMemo(() => miningTotalCalls && dfsTotalCalls && bondTotalCalls && savingsTotalCalls && miningTotalCalls.add(dfsTotalCalls).add(bondTotalCalls).add(savingsTotalCalls), [miningTotalCalls, dfsTotalCalls, bondTotalCalls, savingsTotalCalls])
 
-  const solitaryReserves = useMemo(() => numerator && currentCirculationSupply && parseFloat(formatUnits(numerator)) / parseFloat(formatUnits(currentCirculationSupply)), [currentCirculationSupply, numerator])
+  const solitaryReserves = useMemo(() => numerator && currentCirculationSupply && parseFloat(formatUnits(numerator)) / parseFloat(formatUnits(currentCirculationSupply)) + +solitaryReserve, [currentCirculationSupply, numerator,setSolitaryReserve])
   const inflationRate = useMemo(() => marketPrice && solitaryReserves && (marketPrice - solitaryReserves) / marketPrice, [marketPrice, solitaryReserves])
   const debtRatio = useMemo(() => totalPayout && currentCirculationSupply && (parseFloat(formatUnits(totalPayout?.sub(bondUsed))) * 100) / parseFloat(formatUnits(currentCirculationSupply?.add(parseEther("65000")))), [currentCirculationSupply, totalPayout])
   return (
@@ -369,7 +379,7 @@ const Dashboard = () => {
                             <DataCell
                               title={t('Current circulation volume')}
                               data={
-                                currentCirculationSupply &&
+                                currentCirculationSupply && 
                                 `${formatBigNumber(currentCirculationSupply.add(parseEther("65000")), 2)} DFS`
                               }
                               imgUrl="/images/dashboard/rf.svg"

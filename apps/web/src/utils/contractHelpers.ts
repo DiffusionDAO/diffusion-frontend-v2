@@ -59,6 +59,7 @@ import {
   getHDFSAddress,
   getDiffusionAICatAddress,
   getShareHolderAddress,
+  getDashboardAddress,
 } from 'utils/addressHelpers'
 
 // ABI
@@ -180,6 +181,7 @@ import dfsBond from 'config/abi/dfsBond.json'
 import hbond from 'config/abi/hbond.json'
 import hdfs from 'config/abi/hdfs.json'
 import ShareHolder from 'config/abi/ShareHolder.json'
+import dashboard from 'config/abi/dashboard.json'
 import { ChainId } from '@pancakeswap/sdk'
 
 
@@ -480,4 +482,6 @@ export const getHDFSContract = (signer?: Signer | Provider, chainId?: number) =>
 export const getShareHolderContract = (signer?: Signer | Provider, chainId?: number) => {
   return getContract({ abi: ShareHolder, address: getShareHolderAddress(chainId), signer })
 }
-
+export const getDashboardContract = (signer?: Signer | Provider, chainId?: number) => {
+  return getContract({ abi: dashboard, address: getDashboardAddress(chainId), signer })
+}

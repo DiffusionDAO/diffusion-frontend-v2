@@ -6,7 +6,7 @@ import { useTranslation } from '@pancakeswap/localization'
 import { Skeleton, useMatchBreakpoints } from '@pancakeswap/uikit'
 import { getMiningAddress, getDFSAddress, getPairAddress, getUSDTAddress } from 'utils/addressHelpers'
 import { MaxUint256 } from '@ethersproject/constants'
-import { useBondContract,useBondOldContract, useDFSContract, useDFSMiningContract, useERC20, usePairContract } from 'hooks/useContract'
+import { useBondContract,useBondOldContract, useDashboardContract, useDFSContract, useDFSMiningContract, useERC20, usePairContract } from 'hooks/useContract'
 import { formatBigNumber, formatNumber } from '@pancakeswap/utils/formatBalance'
 import { useRouterContract } from 'utils/exchange'
 import { BigNumber } from '@ethersproject/bignumber'
@@ -75,6 +75,7 @@ const Bond = () => {
   const pairAddress = getPairAddress(chainId)
   const dfsAddress = getDFSAddress(chainId)
   const pair = usePairContract(pairAddress)
+  const dashboard = useDashboardContract()
 
   const { data, status } = useSWR('setMarketPriceAndCentral', async () => {
     const bondDiscount = await bond.discount()
@@ -93,7 +94,8 @@ const Bond = () => {
     const totalPayout = (await bond.totalPayout()).add(await bondOld.totalPayout())
 
     const central = bondPrice * parseFloat(formatUnits(totalPayout,"ether")) + 2350000
-    setCentral(central)
+    const additionalCentral = await dashboard.central()
+    setCentral(central + +additionalCentral)
   })
 
   const openBondModal = (item) => {

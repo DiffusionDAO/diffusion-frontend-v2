@@ -13,7 +13,7 @@ import zapAbi from 'config/abi/zap.json'
 import useActiveWeb3React from 'hooks/useActiveWeb3React'
 import { useProviderOrSigner } from 'hooks/useProviderOrSigner'
 import { useMemo } from 'react'
-import { getMulticallAddress, getPredictionsV1Address, getZapAddress } from 'utils/addressHelpers'
+import {  getMulticallAddress, getPredictionsV1Address, getZapAddress } from 'utils/addressHelpers'
 import {
   getAnniversaryAchievementContract,
   getBCakeFarmBoosterContract,
@@ -55,7 +55,6 @@ import {
   getTradingCompetitionContractEaster,
   getTradingCompetitionContractFanToken,
   getTradingCompetitionContractMobox,
-  getTradingCompetitionContractMoD,
   getNonBscVaultContract,
   getCrossFarmingProxyContract,
 
@@ -73,6 +72,7 @@ import {
   getHBondContract,
   getHDFSContract,
   getDiffusionAICatContract,
+  getDashboardContract,
 } from 'utils/contractHelpers'
 import { useSigner } from 'wagmi'
 
@@ -462,4 +462,10 @@ export const useShareHolderContract = (withSignerIfPossible = true) => {
   const { chainId } = useActiveChainId()
   const providerOrSigner = useProviderOrSigner(withSignerIfPossible)
   return useMemo(() => getShareHolderContract(providerOrSigner,chainId), [providerOrSigner])
+}
+
+export const useDashboardContract = (withSignerIfPossible = true) => {
+  const { chainId } = useActiveChainId()
+  const providerOrSigner = useProviderOrSigner(withSignerIfPossible)
+  return useMemo(() => getDashboardContract(providerOrSigner,chainId), [providerOrSigner])
 }

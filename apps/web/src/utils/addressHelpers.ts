@@ -182,3 +182,7 @@ export const getDiffusionAICatAddress = (chainId?: number) => {
 export const getUSDTAddress = (chainId?: number) => {
   return getAddress(addresses.usdt,chainId)
 }
+
+export const getDashboardAddress = (chainId?: number) => {
+  return getAddress(addresses.dashboard,chainId)
+}
