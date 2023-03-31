@@ -311,7 +311,7 @@ const Dashboard = () => {
   const expansionFund = useMemo(() =>foundationDFS.gt(0) &&  marketPrice > 0 && parseFloat(formatUnits(foundationDFS)) * marketPrice, [foundationDFS, marketPrice])
   const callFactor = useMemo(() => miningTotalCalls && dfsTotalCalls && bondTotalCalls && savingsTotalCalls && miningTotalCalls.add(dfsTotalCalls).add(bondTotalCalls).add(savingsTotalCalls), [miningTotalCalls, dfsTotalCalls, bondTotalCalls, savingsTotalCalls])
 
-  const solitaryReserves = useMemo(() => numerator && currentCirculationSupply && parseFloat(formatUnits(numerator)) / parseFloat(formatUnits(currentCirculationSupply)) + +solitaryReserve, [currentCirculationSupply, numerator,setSolitaryReserve])
+  const solitaryReserves = useMemo(() => numerator && currentCirculationSupply  && solitaryReserve && parseFloat(formatUnits(numerator)) / parseFloat(formatUnits(currentCirculationSupply)) + +solitaryReserve, [currentCirculationSupply, numerator, solitaryReserve])
   const inflationRate = useMemo(() => marketPrice && solitaryReserves && (marketPrice - solitaryReserves) / marketPrice, [marketPrice, solitaryReserves])
   const debtRatio = useMemo(() => totalPayout && currentCirculationSupply && (parseFloat(formatUnits(totalPayout?.sub(bondUsed))) * 100) / parseFloat(formatUnits(currentCirculationSupply?.add(parseEther("65000")))), [currentCirculationSupply, totalPayout])
   return (
