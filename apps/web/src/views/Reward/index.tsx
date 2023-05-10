@@ -501,33 +501,31 @@ const Reward = () => {
                   />
                   <DataCell
                     label={t('Next reward')}
-                    value={`${nextRewardSavingNumber} DFS`}
+                    value={`${nextRewardSavingNumber} AIDFS`}
                     position="horizontal"
                     valueDivStyle={{ fontSize: '14px' }}
                   />
 
-                  {/* <DataCell label='sposAPY' value={rewardData.sposAPY} position="horizontal" valueDivStyle={{ fontSize: "14px" }}/>
-                  <DataCell label='current index' value={`${rewardData.curIndex}DFS`} position="horizontal" valueDivStyle={{ fontSize: "14px" }}/>
-                  <DataCell label='total value deposited' value={rewardData.totalValueDeposited} position="horizontal" valueDivStyle={{ fontSize: "14px" }}/> */}
+                 
                 </CardItem>
               </Grid>
               <Grid item lg={4} md={4} sm={12} xs={12}>
                 <CardItem isMobile={isMobile} className="hasBorder">
                   <DataCell
                     label={t('Balance')}
-                    value={`${formatBigNumber(DfsBalance ?? BigNumber.from(0), 9)} DFS`}
+                    value={`${formatBigNumber(DfsBalance ?? BigNumber.from(0), 9)} AIDFS`}
                     position="horizontal"
                   />
 
                   <DataCell
                     label={t('Staked')}
-                    value={`${formatBigNumber(stakedSavings, 9)} DFS`}
+                    value={`${formatBigNumber(stakedSavings, 9)} AIDFS`}
                     position="horizontal"
                   />
 
                   <DataCell
                     label={t('Rewards')}
-                    value={`${parseFloat(formatBigNumber(pendingSavingInterest, 9))} DFS`}
+                    value={`${parseFloat(formatBigNumber(pendingSavingInterest, 9))} AIDFS`}
                     position="horizontal"
                   />
                 </CardItem>
@@ -536,7 +534,7 @@ const Reward = () => {
                 <CardItem isMobile={isMobile} className="hasBorder">
                   <MoneyInput
                     prefix=""
-                    suffix="DFS"
+                    suffix="AIDFS"
                     value={amount?.toString()}
                     onInput={(e: any) => setAmount(e.target.value)}
                   />

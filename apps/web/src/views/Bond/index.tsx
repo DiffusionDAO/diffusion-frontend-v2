@@ -160,7 +160,7 @@ const Bond = () => {
         {!isMobile && (
           <HeaderDes>
             {t(
-              'Sales of bonds is the only way for DFS to be minted, through the sales of bonds to accumulate large asset volume, the central financial agreement will have but not limited to USDT, ETH, BNB and equivalent type of assets. This type of asset will become the core foundation supporting the value of DFS.',
+              'Sales of bonds is the only way for AIDFS to be minted, through the sales of bonds to accumulate large asset volume, the central financial agreement will have but not limited to USDT, ETH, BNB and equivalent type of assets. This type of asset will become the core foundation supporting the value of AIDFS.',
             )}
           </HeaderDes>
         )}
@@ -179,7 +179,7 @@ const Bond = () => {
             )}
           </OverviewCardItem>
           <OverviewCardItem>
-            <OverviewCardItemTitle>{t('Price of DFS')}</OverviewCardItemTitle>
+            <OverviewCardItemTitle>{t('Price of AIDFS')}</OverviewCardItemTitle>
             {marketPrice > 0 ? (
               <OverviewCardItemContent isMobile={isMobile}>${formatNumber(marketPrice, 2)}</OverviewCardItemContent>
             ) : (
@@ -202,7 +202,7 @@ const Bond = () => {
 
         {!isMobile && (
           <OverviewPromptList>
-            <OverviewPromptItem>{t('Get DFS at a discounted bond price')}</OverviewPromptItem>
+            <OverviewPromptItem>{t('Get AIDFS at a discounted bond price')}</OverviewPromptItem>
             <OverviewPromptItem>{t('DFS will be fully released linearly in 10 days after bonds purchase')}</OverviewPromptItem>
             <OverviewPromptItem>
               {t(
@@ -227,7 +227,7 @@ const Bond = () => {
               <BondListItemContent isMobile={isMobile}>
                 <ContentCell isMobile={isMobile}>
                   <CellTitle>{t('Price')}</CellTitle>
-                  <CellText>${item.price}</CellText>
+                  <CellText>{`$${item.price}`}</CellText>
                 </ContentCell>
                 <ContentCell isMobile={isMobile}>
                   <CellTitle>{t('Discount')}</CellTitle>

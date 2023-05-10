@@ -2,7 +2,7 @@
 const bondDatas = [
   {
     key: '1',
-    name: 'DFS-USDT',
+    name: 'AIDFS-USDT',
     status: 'opened',
     from: '/images/dfs.png',
     to: '/images/bond/usdt.png',

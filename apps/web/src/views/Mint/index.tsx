@@ -228,7 +228,7 @@ const Mint = () => {
                   <DalaCardListTitle>{t('Advanced Mint')}</DalaCardListTitle>
                   <DataCell
                     label={t('Price')}
-                    value={`${formatUnits(seniorPrice, 'ether')} DFS`}
+                    value={`${formatUnits(seniorPrice, 'ether')} AIDFS`}
                     valueDivStyle={{ fontSize: '14px' }}
                     position="horizontal"
                   />
@@ -251,10 +251,10 @@ const Mint = () => {
                 </DalaCardList>
                 <CountWrap>
                   <AvailableCount>
-                    {t('Balance')}: {balance ? formatBigNumber(balance, 2) : 0} DFS
+                    {t('Balance')}: {balance ? formatBigNumber(balance, 2) : 0} AIDFS
                   </AvailableCount>
                   <UnWithdrawCount>
-                    {t('Unused')}: {formatBigNumber(bondUnused, 2)} DFS
+                    {t('Unused')}: {formatBigNumber(bondUnused, 2)} AIDFS
                   </UnWithdrawCount>
                 </CountWrap>
                 <ActionWrap>
@@ -328,7 +328,7 @@ const Mint = () => {
                   <DalaCardListTitle>{t('Basic Mint')}</DalaCardListTitle>
                   <DataCell
                     label={t('Price')}
-                    value={`${formatBigNumber(ordinaryPrice, 2)} DFS`}
+                    value={`${formatBigNumber(ordinaryPrice, 2)} AIDFS`}
                     valueDivStyle={{ fontSize: '14px' }}
                     position="horizontal"
                   />
@@ -351,10 +351,10 @@ const Mint = () => {
                 </DalaCardList>
                 <CountWrap>
                   <AvailableCount>
-                    {t('Balance')}: {balance ? formatBigNumber(balance, 2) : 0} DFS
+                    {t('Balance')}: {balance ? formatBigNumber(balance, 2) : 0} AIDFS
                   </AvailableCount>
                   <UnWithdrawCount>
-                    {t('Unused')}: {formatBigNumber(bondUnused, 2)} DFS
+                    {t('Unused')}: {formatBigNumber(bondUnused, 2)} AIDFS
                   </UnWithdrawCount>
                 </CountWrap>
                 <ActionWrap>
@@ -428,7 +428,7 @@ const Mint = () => {
                   <DalaCardListTitle>{t('Experience Mint')}</DalaCardListTitle>
                   <DataCell
                     label={t('Price')}
-                    value={`${formatBigNumber(tryCost, 2)} DFS`}
+                    value={`${formatBigNumber(tryCost, 2)} AIDFS`}
                     valueDivStyle={{ fontSize: '14px' }}
                     position="horizontal"
                   />
@@ -443,10 +443,10 @@ const Mint = () => {
                 </DalaCardList>
                 <CountWrap>
                   <AvailableCount>
-                    {t('Balance')}: {balance ? formatBigNumber(balance, 2) : 0} DFS
+                    {t('Balance')}: {balance ? formatBigNumber(balance, 2) : 0} AIDFS
                   </AvailableCount>
                   <UnWithdrawCount>
-                    {t('Unused')}: {formatBigNumber(bondUnused, 2)} DFS
+                    {t('Unused')}: {formatBigNumber(bondUnused, 2)} AIDFS
                   </UnWithdrawCount>
                 </CountWrap>
                 <ActionWrap>

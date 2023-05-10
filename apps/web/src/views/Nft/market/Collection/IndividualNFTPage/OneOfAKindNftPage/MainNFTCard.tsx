@@ -174,7 +174,7 @@ const MainNFTCard: React.FC<React.PropsWithChildren<MainNFTCardProps>> = ({
                   setNoteContent({
                     title: t('Note'),
                     description: t(
-                      `%unstakeFee%%(%unstakeNeed% DFS) fees based on SPOS providede by current staked NFT will be charged for unstaking`,
+                      `%unstakeFee%%(%unstakeNeed% AIDFS) fees based on SPOS providede by current staked NFT will be charged for unstaking`,
                       { unstakeFee: unstakeFee.toString(), unstakeNeed: formatUnits(unstakeNeed) },
                     ),
                     visible: true,

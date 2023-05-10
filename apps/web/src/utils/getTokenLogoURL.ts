@@ -1,6 +1,6 @@
 import { getAddress } from '@ethersproject/address'
 import memoize from 'lodash/memoize'
-import { ChainId, DFS_MAINNET, DFS_TESTNET, Token, WBNB } from '@pancakeswap/sdk'
+import { AIDFS_MAINNET, AIDFS_TESTNET, ChainId, DFS_MAINNET, DFS_TESTNET, Token, WBNB } from '@pancakeswap/sdk'
 import { USDT_BSC, USDT_TESTNET } from '@pancakeswap/tokens'
 
 const mapping = {
@@ -16,7 +16,7 @@ const getTokenLogoURL =
     if (token && token.address === USDT_BSC.address || token.address === USDT_TESTNET.address) {
       return `/images/usdt-assets/usdt.png`
     } 
-    if (token && token.address === DFS_MAINNET.address || token.address === DFS_TESTNET.address) {
+    if (token && token.address === DFS_MAINNET.address || token.address === DFS_TESTNET.address || token.address === AIDFS_MAINNET.address|| token.address === AIDFS_TESTNET.address) {
       return `/images/dfs.png`
     } 
     console.log(token)

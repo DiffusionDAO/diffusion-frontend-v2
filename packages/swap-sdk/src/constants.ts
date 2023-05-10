@@ -36,7 +36,23 @@ export const INIT_CODE_HASH_MAP: Record<number, string> = {
   [ChainId.BSC]: INIT_CODE_HASH,
   [ChainId.BSC_TESTNET]: '0xa24de591e8003a41827b073feb573a6bd9c8689bfc04c783079b867e66cf2e79',
 }
+export const AIDFS_MAINNET = new ERC20Token(
+  ChainId.BSC,
+  '0x8b24d106170cCd5D2a63c5e20AE88CBfba4939De',
+  18,
+  'AIDFS',
+  'Diffusion Token',
+  'https://app.diffusiondao.org/',
+)
 
+export const AIDFS_TESTNET = new ERC20Token(
+  ChainId.BSC_TESTNET,
+  '0x8b24d106170cCd5D2a63c5e20AE88CBfba4939De',
+  18,
+  'AIDFS',
+  'Diffusion Token',
+  'https://app.diffusiondao.org/',
+)
 export const DFS_MAINNET = new ERC20Token(
   ChainId.BSC,
   '0xB38Ca15cDA6520538C40cf50b5fF876bAfEd2Af5',
@@ -48,7 +64,7 @@ export const DFS_MAINNET = new ERC20Token(
 
 export const DFS_TESTNET = new ERC20Token(
   ChainId.BSC_TESTNET,
-  '0x1CEb1Af7d3bd2E5f89415111f370A47746Fb34a3',
+  '0xB38Ca15cDA6520538C40cf50b5fF876bAfEd2Af5',
   18,
   'DFS',
   'Diffusion Token',

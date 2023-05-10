@@ -1,5 +1,5 @@
 import { multicallAddresses } from '@pancakeswap/multicall'
-import { ChainId, DFS, DFS_MAINNET, DFS_TESTNET } from '@pancakeswap/sdk'
+import { ChainId, DFS, DFS_MAINNET, DFS_TESTNET ,AIDFS_MAINNET,AIDFS_TESTNET} from '@pancakeswap/sdk'
 
 export default {
   masterChef: {
@@ -179,8 +179,12 @@ export default {
     56: DFS[ChainId.BSC].address,
     97: DFS[ChainId.BSC_TESTNET].address,
   },
+  aidfs: {
+    56: AIDFS_MAINNET,
+    97: AIDFS_TESTNET,
+  },
   pair: {
-    56: '0xA5084951430Ec91413B0edE7b4aed8383632bD57',
+    56: '0x706268f0df946041dc7c8CFFFd58fAA140dFE9D4',
     97: '0xF375c6D44C92b15584B908d62f13CCE81d82C661',
   },
   bondOld: {

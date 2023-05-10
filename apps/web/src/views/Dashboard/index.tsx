@@ -303,9 +303,6 @@ const Dashboard = () => {
   // eslint-disable-next-line no-return-assign, no-param-reassign
   // const avgConentraction = concentractions.reduce((acc, cur) => (acc += cur), 0) / concentractions.length
 
-
-
-
   const time = new Date()
 
   const expansionFund = useMemo(() =>foundationDFS.gt(0) &&  marketPrice > 0 && parseFloat(formatUnits(foundationDFS)) * marketPrice, [foundationDFS, marketPrice])
@@ -365,7 +362,7 @@ const Dashboard = () => {
                               title={t('Total circulation')}
                               data={
                                 totalCirculationSupply &&
-                                `${formatBigNumber(totalCirculationSupply, 2)} DFS`
+                                `${formatBigNumber(totalCirculationSupply, 2)} AIDFS`
                               }
                             />
                             <DataCell

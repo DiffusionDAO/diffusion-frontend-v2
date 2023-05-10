@@ -1,4 +1,4 @@
-import { ChainId, Token, WBNB, DFS_MAINNET, ERC20Token } from '@pancakeswap/sdk'
+import { ChainId, Token, WBNB, DFS_MAINNET, ERC20Token, AIDFS_MAINNET } from '@pancakeswap/sdk'
 import { BUSD_BSC, USDT_BSC } from './common'
 
 export const bscTokens = {
@@ -14,5 +14,6 @@ export const bscTokens = {
   ),
   usdt: USDT_BSC,
   busd: BUSD_BSC,
-  dfs: DFS_MAINNET
+  dfs: DFS_MAINNET,
+  aidfs: AIDFS_MAINNET,
 }

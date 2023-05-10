@@ -350,19 +350,19 @@ const BondModal: React.FC<BondModalProps> = ({
         )}
         <ListItem>
           <ListLable>{t('Your balance')}</ListLable>
-          <ListContent>{dfsBalance ?? 0} DFS</ListContent>
+          <ListContent>{dfsBalance ?? 0} AIDFS</ListContent>
         </ListItem>
         <ListItem>
           <ListLable>{t('You will receive')}</ListLable>
           {activeTab === 'mint' ? (
-            <ListContent>{payout ?? 0} DFS</ListContent>
+            <ListContent>{payout ?? 0} AIDFS</ListContent>
           ) : (
-            <ListContent>{formatUnits(pendingPayout, 18)} DFS</ListContent>
+            <ListContent>{formatUnits(pendingPayout, 18)} AIDFS</ListContent>
           )}
         </ListItem>
         <ListItem>
           <ListLable>{t('Unused')}</ListLable>
-          <ListContent>{formatBigNumber(bondUnused, 18)} DFS</ListContent>
+          <ListContent>{formatBigNumber(bondUnused, 18)} AIDFS</ListContent>
         </ListItem>
 
         <ListItem>

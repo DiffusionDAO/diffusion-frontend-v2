@@ -39,7 +39,7 @@ export const SUGGESTED_BASES: ChainTokenList = {
   [ChainId.ETHEREUM]: [USDC[ChainId.ETHEREUM], USDT[ChainId.ETHEREUM], WNATIVE[ChainId.ETHEREUM], WBTC_ETH],
   [ChainId.RINKEBY]: [USDC[ChainId.RINKEBY], WNATIVE[ChainId.RINKEBY], BUSD[ChainId.RINKEBY]],
   [ChainId.GOERLI]: [USDC[ChainId.GOERLI], WNATIVE[ChainId.GOERLI], BUSD[ChainId.GOERLI]],
-  [ChainId.BSC]: [bscTokens.usdt, bscTokens.dfs],
+  [ChainId.BSC]: [bscTokens.usdt, bscTokens.dfs, bscTokens.aidfs],
   [ChainId.BSC_TESTNET]: [bscTestnetTokens.usdt, DFS_TESTNET],
 }
 
