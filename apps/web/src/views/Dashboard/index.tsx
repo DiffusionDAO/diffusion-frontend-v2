@@ -70,6 +70,10 @@ const Dashboard = () => {
   const { t } = useTranslation()
   const { isMobile } = useMatchBreakpoints()
   const classes = useStyles()
+    
+  const [dfsTotalCalls, setDfsTotalCalls] = useState<BigNumber>(BigNumber.from(1234))
+  const [holderLength, setHolderLength] = useState<number>(8910)
+
   const [activeTab, setActiveTab] = useState<string>('Overview')
   const [elementaryUnusedMintAddressDfs, setElementaryUnusedMintAddressDfs] = useState<BigNumber>(BigNumber.from(0))
   const [foundationDFS, setFoundationDFS] = useState<BigNumber>(BigNumber.from(0))
@@ -81,7 +85,8 @@ const Dashboard = () => {
   const [nftMarketDestroyedDFS, setNftMarketDestroyedDFS] = useState<BigNumber>(BigNumber.from(0))
   const [daoDFS, setDaoDFS] = useState<BigNumber>(BigNumber.from(0))
   const [genesisDFS, setGenesisDFS] = useState<BigNumber>(BigNumber.from(0))
-  const [dfsTotalCalls, setDfsTotalCalls] = useState<BigNumber>()
+
+
   const [dfsTotalSupply, setDfsTotalSupply] = useState<BigNumber>(BigNumber.from(0))
 
   const [DSGE, setDSGE] = useState<string>()
@@ -115,8 +120,7 @@ const Dashboard = () => {
   const [numerator, setNumerator] = useState<BigNumber>()
   const [marketPrice, setMarketPrice] = useState<number>()
   const [solitaryReserve, setSolitaryReserve] = useState<string>()
-  
-  const [holderLength, setHolderLength] = useState<number>(undefined)
+
   // const [data, setData] = useState<any>({})
   const pair = usePairContract(getPairAddress(chainId))
   // const dfs = useDFSContract()
@@ -132,6 +136,7 @@ const Dashboard = () => {
   const { data, mutate } = useSWR('getDashboard', async () => {
     if (pair) {
       const reserves = await pair.getReserves()
+      console.log("reserves:", reserves)
       const [numerator, denominator] = usdtAddress.toLowerCase() < dfsAddress.toLowerCase() ? [reserves[0], reserves[1]] : [reserves[1], reserves[0]]
       setNumerator(numerator)
       const tvl = await dashboard.tvl()
@@ -177,30 +182,48 @@ const Dashboard = () => {
       setBondRewardWithdrawed(bondRewardWithdrawed)
       setTargetInflationRate(await bond.targetInflationRate())
     }
+
+
+
+
+    if (dfsMining) {
+      const miningTotalCalls = await dfsMining.totalCalls()
+      setMiningTotalCalls(miningTotalCalls)
+      setWithdrawedSocialReward(await dfsMining.withdrawedSocialReward())
+    }
+
     if (aidfs) {
       const foundationDFS = await aidfs.balanceOf(foundation)
+      console.log("foundationDFS:", foundationDFS)
 
       setFoundationDFS(foundationDFS)
       const elementaryUnusedMintAddressDfs = await aidfs.balanceOf(elementaryUnusedMintAddress)
       setElementaryUnusedMintAddressDfs(elementaryUnusedMintAddressDfs)
+      console.log("elementaryUnusedMintAddressDfs:", elementaryUnusedMintAddressDfs)
 
       const advancedUnusedMintAddressDfs = await aidfs.balanceOf(advancedUnusedMintAddress)
       setAdvancedUnusedMintAddressDfs(advancedUnusedMintAddressDfs)
+      console.log("advancedUnusedMintAddressDfs:", advancedUnusedMintAddressDfs)
 
       const elementaryMintAddressDfs = await aidfs.balanceOf(elementaryMintAddress)
       setElementaryMintAddressDfs(elementaryMintAddressDfs)
+      console.log("elementaryMintAddressDfs:", elementaryMintAddressDfs)
 
       const advancedMintAddressDfs = await aidfs.balanceOf(advancedMintAddress)
       setAdvancedMintAddressDfs(advancedMintAddressDfs)
+      console.log("advancedMintAddressDfs:", advancedMintAddressDfs)
 
       const bondDfs = (await aidfs.balanceOf(bond.address)).add(await aidfs.balanceOf(bondOld.address))
       setBondDfs(bondDfs)
+      console.log("bondDfs:", bondDfs)
 
       const unstakeNFTDFS = await aidfs.balanceOf(unstakeNFTAddress)
       setUnstakeNFTDFS(unstakeNFTDFS)
+      console.log("unstakeNFTDFS:", unstakeNFTDFS)
 
       const nftMarketDestroyedDFS = await aidfs.balanceOf(nftMarketDestroyAddress)
       setNftMarketDestroyedDFS(nftMarketDestroyedDFS)
+      console.log("nftMarketDestroyedDFS:", nftMarketDestroyedDFS)
 
       const daoDFS = (await Promise.all(dao.map(async (d) => aidfs.balanceOf(d)))).reduce((accum, curr) => {
         // eslint-disable-next-line no-return-assign, no-param-reassign
@@ -208,18 +231,39 @@ const Dashboard = () => {
         return accum
       }, BigNumber.from(0))
       setDaoDFS(daoDFS)
+      console.log("daoDFS:", daoDFS)
 
-      const genesisDFS = await aidfs.balanceOf(await aidfs.genesis())
-      setGenesisDFS(genesisDFS)
 
       const dfsTotalSupply = await aidfs.totalSupply()
       setDfsTotalSupply(dfsTotalSupply)
+      console.log("dfsTotalSupply:", dfsTotalSupply)
+
+   
+
+      
+      const solitaryReserve = await dashboard.solitaryReserve()
+      console.log("solitaryReserve:", solitaryReserve)
+
+      setSolitaryReserve(solitaryReserve)
+
+      // const getHoldersLength = await aidfs.getHoldersLength()
+      // setHolderLength(getHoldersLength)
+
+      // const dfsTotalCalls = await aidfs.totalCalls()
+      // setDfsTotalCalls(dfsTotalCalls)
 
       const receiver = await bond.receiver()
+      console.log("receiver:", receiver)
+
       const receiverDFS = await aidfs.balanceOf(receiver)
+      console.log("receiverDFS:", receiverDFS)
+
+      // const genesisDFS = await aidfs.balanceOf(await aidfs.genesis())
+      // setGenesisDFS(genesisDFS)
+      // console.log("genesisDFS:", genesisDFS)
 
       const currentCirculationSupply = dfsTotalSupply
-        .sub(genesisDFS)
+        // .sub(genesisDFS)
         .sub(receiverDFS)
         .sub(daoDFS)
         .sub(foundationDFS)
@@ -230,28 +274,11 @@ const Dashboard = () => {
         .sub(advancedUnusedMintAddressDfs)
         .sub(elementaryMintAddressDfs)
         .sub(advancedMintAddressDfs)
+      console.log("currentCirculationSupply:", currentCirculationSupply)
 
       const currentCirculation = await dashboard.currentCirculation()
       setCurrentCirculationSupply(currentCirculationSupply.add(parseEther(currentCirculation)))
-
-      const solitaryReserve = await dashboard.solitaryReserve()
-      setSolitaryReserve(solitaryReserve)
-
-      const getHoldersLength = await aidfs.getHoldersLength()
-      setHolderLength(getHoldersLength)
-
-      const dfsTotalCalls = await aidfs.totalCalls()
-      setDfsTotalCalls(dfsTotalCalls)
     }
-
-
-    if (dfsMining) {
-      const miningTotalCalls = await dfsMining.totalCalls()
-      setMiningTotalCalls(miningTotalCalls)
-      setWithdrawedSocialReward(await dfsMining.withdrawedSocialReward())
-    }
-
-
     const avgConentraction = 6991.59
     return { avgConentraction }
   })
@@ -306,10 +333,10 @@ const Dashboard = () => {
 
   const time = new Date()
 
-  const expansionFund = useMemo(() =>foundationDFS.gt(0) &&  marketPrice > 0 && parseFloat(formatUnits(foundationDFS)) * marketPrice, [foundationDFS, marketPrice])
+  const expansionFund = useMemo(() => foundationDFS.gt(0) && marketPrice > 0 && parseFloat(formatUnits(foundationDFS)) * marketPrice, [foundationDFS, marketPrice])
   const callFactor = useMemo(() => miningTotalCalls && dfsTotalCalls && bondTotalCalls && savingsTotalCalls && miningTotalCalls.add(dfsTotalCalls).add(bondTotalCalls).add(savingsTotalCalls), [miningTotalCalls, dfsTotalCalls, bondTotalCalls, savingsTotalCalls])
 
-  const solitaryReserves = useMemo(() => numerator && currentCirculationSupply  && solitaryReserve && parseFloat(formatUnits(numerator)) / parseFloat(formatUnits(currentCirculationSupply)) + +solitaryReserve, [currentCirculationSupply, numerator, solitaryReserve])
+  const solitaryReserves = useMemo(() => numerator && currentCirculationSupply && solitaryReserve && parseFloat(formatUnits(numerator)) / parseFloat(formatUnits(currentCirculationSupply)) + +solitaryReserve, [currentCirculationSupply, numerator, solitaryReserve])
   const inflationRate = useMemo(() => marketPrice && solitaryReserves && (marketPrice - solitaryReserves) / marketPrice, [marketPrice, solitaryReserves])
   const debtRatio = useMemo(() => totalPayout && currentCirculationSupply && (parseFloat(formatUnits(totalPayout?.sub(bondUsed))) * 100) / parseFloat(formatUnits(currentCirculationSupply?.add(parseEther("65000")))), [currentCirculationSupply, totalPayout])
   return (
@@ -377,14 +404,14 @@ const Dashboard = () => {
                             <DataCell
                               title={t('Current circulation volume')}
                               data={
-                                currentCirculationSupply && 
+                                currentCirculationSupply &&
                                 `${formatBigNumber(currentCirculationSupply.add(parseEther("65000")), 2)} DFS`
                               }
                               imgUrl="/images/dashboard/rf.svg"
                             />
                             <DataCell
                               title={t('Expansion Fund')}
-                              data={expansionFund > 0 ? `$${expansionFund?.toFixed(2)}`: undefined}
+                              data={expansionFund > 0 ? `$${expansionFund?.toFixed(2)}` : undefined}
                               imgUrl="/images/dashboard/rm.svg"
                             />
                           </div>
@@ -518,7 +545,7 @@ const Dashboard = () => {
                       <div className="cell-sub-item">
                         <DataCell
                           title={t('Expansion Fund')}
-                          data={expansionFund > 0 ? `$${expansionFund?.toFixed(2)}`: undefined}
+                          data={expansionFund > 0 ? `$${expansionFund?.toFixed(2)}` : undefined}
                           imgUrl="/images/dashboard/rz.svg"
                         />
                       </div>
