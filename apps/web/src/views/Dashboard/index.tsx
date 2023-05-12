@@ -194,36 +194,28 @@ const Dashboard = () => {
 
     if (aidfs) {
       const foundationDFS = await aidfs.balanceOf(foundation)
-      console.log("foundationDFS:", foundationDFS)
 
       setFoundationDFS(foundationDFS)
       const elementaryUnusedMintAddressDfs = await aidfs.balanceOf(elementaryUnusedMintAddress)
       setElementaryUnusedMintAddressDfs(elementaryUnusedMintAddressDfs)
-      console.log("elementaryUnusedMintAddressDfs:", elementaryUnusedMintAddressDfs)
 
       const advancedUnusedMintAddressDfs = await aidfs.balanceOf(advancedUnusedMintAddress)
       setAdvancedUnusedMintAddressDfs(advancedUnusedMintAddressDfs)
-      console.log("advancedUnusedMintAddressDfs:", advancedUnusedMintAddressDfs)
 
       const elementaryMintAddressDfs = await aidfs.balanceOf(elementaryMintAddress)
       setElementaryMintAddressDfs(elementaryMintAddressDfs)
-      console.log("elementaryMintAddressDfs:", elementaryMintAddressDfs)
 
       const advancedMintAddressDfs = await aidfs.balanceOf(advancedMintAddress)
       setAdvancedMintAddressDfs(advancedMintAddressDfs)
-      console.log("advancedMintAddressDfs:", advancedMintAddressDfs)
 
       const bondDfs = (await aidfs.balanceOf(bond.address)).add(await aidfs.balanceOf(bondOld.address))
       setBondDfs(bondDfs)
-      console.log("bondDfs:", bondDfs)
 
       const unstakeNFTDFS = await aidfs.balanceOf(unstakeNFTAddress)
       setUnstakeNFTDFS(unstakeNFTDFS)
-      console.log("unstakeNFTDFS:", unstakeNFTDFS)
 
       const nftMarketDestroyedDFS = await aidfs.balanceOf(nftMarketDestroyAddress)
       setNftMarketDestroyedDFS(nftMarketDestroyedDFS)
-      console.log("nftMarketDestroyedDFS:", nftMarketDestroyedDFS)
 
       const daoDFS = (await Promise.all(dao.map(async (d) => aidfs.balanceOf(d)))).reduce((accum, curr) => {
         // eslint-disable-next-line no-return-assign, no-param-reassign
@@ -231,18 +223,12 @@ const Dashboard = () => {
         return accum
       }, BigNumber.from(0))
       setDaoDFS(daoDFS)
-      console.log("daoDFS:", daoDFS)
 
 
       const dfsTotalSupply = await aidfs.totalSupply()
       setDfsTotalSupply(dfsTotalSupply)
-      console.log("dfsTotalSupply:", dfsTotalSupply)
-
-   
-
       
       const solitaryReserve = await dashboard.solitaryReserve()
-      console.log("solitaryReserve:", solitaryReserve)
 
       setSolitaryReserve(solitaryReserve)
 
@@ -253,10 +239,8 @@ const Dashboard = () => {
       // setDfsTotalCalls(dfsTotalCalls)
 
       const receiver = await bond.receiver()
-      console.log("receiver:", receiver)
 
       const receiverDFS = await aidfs.balanceOf(receiver)
-      console.log("receiverDFS:", receiverDFS)
 
       // const genesisDFS = await aidfs.balanceOf(await aidfs.genesis())
       // setGenesisDFS(genesisDFS)
@@ -274,7 +258,6 @@ const Dashboard = () => {
         .sub(advancedUnusedMintAddressDfs)
         .sub(elementaryMintAddressDfs)
         .sub(advancedMintAddressDfs)
-      console.log("currentCirculationSupply:", currentCirculationSupply)
 
       const currentCirculation = await dashboard.currentCirculation()
       setCurrentCirculationSupply(currentCirculationSupply.add(parseEther(currentCirculation)))
