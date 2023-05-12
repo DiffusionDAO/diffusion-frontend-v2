@@ -6,6 +6,7 @@ import { ExclamationCircleOutlined } from '@ant-design/icons'
 import { Modal } from 'antd'
 import { parseUnits, formatUnits, parseEther } from '@ethersproject/units'
 import {
+  useAIDFSContract,
   useBondContract,
   useDFSContract,
   useDFSMiningContract,
@@ -112,7 +113,8 @@ const BondModal: React.FC<BondModalProps> = ({
   }
   const zeroAddress = '0x0000000000000000000000000000000000000000'
   const dfsMining = useDFSMiningContract()
-  const dfs = useDFSContract()
+  // const dfs = useDFSContract()
+  const aidfs = useAIDFSContract()
   const pdfs = usePDFSContract()
   const usdtAddress = getUSDTAddress(chainId)
   const dfsAddress = getDFSAddress(chainId)
@@ -182,7 +184,7 @@ const BondModal: React.FC<BondModalProps> = ({
 
       bond.unusedOf(account).then((res) => setBondUnused(res))
 
-      dfs
+      aidfs
         .balanceOf(account)
         .then((res) => {
           setDfsBalance(formatBigNumber(res, 18))

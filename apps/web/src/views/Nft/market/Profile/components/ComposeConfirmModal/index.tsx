@@ -38,7 +38,7 @@ const ComposeConfirmModal: React.FC<CompoundConfirmModalProps> = ({ onDismiss, s
         </AchievWrap>
         <CardListWrap>
           <CardListTitle>{t('Consumption')}</CardListTitle>
-          {nfts.length &&
+          {nfts?.length &&
             nfts.map((nft) => {
               const { marketData, location } = nft
               return (

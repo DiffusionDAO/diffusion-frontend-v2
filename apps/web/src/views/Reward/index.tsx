@@ -9,7 +9,7 @@ import 'swiper/css'
 import 'swiper/css/navigation'
 import { useTranslation } from '@pancakeswap/localization'
 import { useRouter } from 'next/router'
-import { useBondContract, useDFSContract, useDFSMiningContract, useDFSSavingsContract } from 'hooks/useContract'
+import { useAIDFSContract, useBondContract, useDFSContract, useDFSMiningContract, useDFSSavingsContract } from 'hooks/useContract'
 import { BigNumber } from '@ethersproject/bignumber'
 import { useSWRContract, useSWRMulticall } from 'hooks/useSWRContract'
 import { MaxUint256 } from '@ethersproject/constants'
@@ -122,7 +122,8 @@ const Reward = () => {
   const dfsMining = useDFSMiningContract()
   const dfsSavings = useDFSSavingsContract()
   const bond = useBondContract()
-  const dfsContract = useDFSContract()
+  // const dfsContract = useDFSContract()
+  const aidfsContract = useAIDFSContract()
   const dfsSavingsAddress = getSavingsAddress(chainId)
   
   const slidesPerView = isMobile ? 1 : 3
@@ -181,7 +182,7 @@ const Reward = () => {
       }
       setPendingSocialReward(await dfsMining.pendingSocialReward(account))
       setBondRewardUnpaid(referralBond?.bondRewardUnpaid)
-      const dfsBalance = await dfsContract.balanceOf(account)
+      const dfsBalance = await aidfsContract.balanceOf(account)
       setDfsBalance(dfsBalance)
 
       setPendingSavingInterest(referralSavings?.savingInterest.add(await dfsSavings.pendingSavingInterest(account)))
@@ -558,9 +559,9 @@ const Reward = () => {
                       onClick={async () => {
                         if (amount) {
                           try {
-                            const allowance = await dfsContract.allowance(account, dfsSavingsAddress)
+                            const allowance = await aidfsContract.allowance(account, dfsSavingsAddress)
                             if (allowance.eq(0)) {
-                              const receipt = await dfsContract.approve(dfsSavingsAddress, MaxUint256)
+                              const receipt = await aidfsContract.approve(dfsSavingsAddress, MaxUint256)
                               await receipt.wait()
                             }
                             const parsedAmount = parseUnits(amount, 'ether')

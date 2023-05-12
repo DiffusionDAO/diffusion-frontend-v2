@@ -136,6 +136,9 @@ export const getNftMarketAddress = (chainId?: number) => {
 export const getDFSAddress = (chainId?: number) => {
   return getAddress(addresses.dfs,chainId)
 }
+export const getAIDFSAddress = (chainId?: number) => {
+  return getAddress(addresses.aidfs,chainId)
+}
 export const getPDFSAddress = (chainId?: number) => {
   return getAddress(addresses.pdfs,chainId)
 }

@@ -3,7 +3,7 @@ import { FC, useEffect, useState } from 'react'
 import { Grid } from '@material-ui/core'
 import { useWeb3React } from '@pancakeswap/wagmi'
 import { useTranslation } from '@pancakeswap/localization'
-import { useBondContract, useSocialNftContract, useERC20, useDFSContract } from 'hooks/useContract'
+import { useBondContract, useSocialNftContract, useERC20, useDFSContract, useAIDFSContract } from 'hooks/useContract'
 import { getDFSAddress, getSocialNFTAddress } from 'utils/addressHelpers'
 import { MaxUint256 } from '@ethersproject/constants'
 import { BigNumber } from '@ethersproject/bignumber'
@@ -78,7 +78,8 @@ const Mint = () => {
     socialNFT.elementaryCost().then((oneCost) => setOneCost(oneCost))
     socialNFT.advancedCost().then((twoCost) => setTwoCost(twoCost))
   }, [account, balance])
-  const DFS = useDFSContract()
+  // const DFS = useDFSContract()
+  const AIDFS = useAIDFSContract()
 
   const bond = useBondContract()
 
@@ -86,7 +87,7 @@ const Mint = () => {
     if (account) {
       bond.addressToReferral(account).then((res) => setBondUsed(res.bondUsed))
       bond.unusedOf(account).then((res) => setBondPayout(res))
-      DFS.balanceOf(account)
+      AIDFS.balanceOf(account)
         .then((res) => {
           if (!res.eq(balance)) {
             setBalance(res)
@@ -295,9 +296,9 @@ const Mint = () => {
                 <DrawBlindBoxPrimaryBtn
                   className="orangeBtn"
                   onClick={async () => {
-                    const allowance = await DFS.allowance(account, socialNFT.address)
+                    const allowance = await AIDFS.allowance(account, socialNFT.address)
                     if (allowance.eq(0)) {
-                      const receipt = await DFS.approve(socialNFT.address, MaxUint256)
+                      const receipt = await AIDFS.approve(socialNFT.address, MaxUint256)
                       await receipt.wait()
                     }
                     mint('senior', false)
@@ -395,9 +396,9 @@ const Mint = () => {
                 <DrawBlindBoxPrimaryBtn
                   className="purpleBtn"
                   onClick={async () => {
-                    const allowance = await DFS.allowance(account, socialNFT.address)
+                    const allowance = await AIDFS.allowance(account, socialNFT.address)
                     if (allowance.eq(0)) {
-                      const receipt = await DFS.approve(socialNFT.address, MaxUint256)
+                      const receipt = await AIDFS.approve(socialNFT.address, MaxUint256)
                       await receipt.wait()
                     }
                     mint('ordinary', false)
@@ -487,9 +488,9 @@ const Mint = () => {
                 <DrawBlindBoxPrimaryBtn
                   className="greenBtn"
                   onClick={async () => {
-                    const allowance = await DFS.allowance(account, socialNFT.address)
+                    const allowance = await AIDFS.allowance(account, socialNFT.address)
                     if (allowance.eq(0)) {
-                      const receipt = await DFS.approve(socialNFT.address, MaxUint256)
+                      const receipt = await AIDFS.approve(socialNFT.address, MaxUint256)
                       await receipt.wait()
                     }
                     mint('try', false)

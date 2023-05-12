@@ -18,7 +18,7 @@ import { useState, useEffect } from 'react'
 import { useTranslation } from '@pancakeswap/localization'
 import { NftToken } from 'state/nftMarket/types'
 import styled, { css } from 'styled-components'
-import { useDFSContract, useDFSMiningContract } from 'hooks/useContract'
+import { useAIDFSContract, useDFSContract, useDFSMiningContract } from 'hooks/useContract'
 import NFTMedia from 'views/Nft/market/components/NFTMedia'
 import { MaxUint256 } from '@ethersproject/constants'
 import CustomModal from 'views/Nft/market/Profile/components/CustomModal'
@@ -114,7 +114,8 @@ const MainNFTCard: React.FC<React.PropsWithChildren<MainNFTCardProps>> = ({
   const router = useRouter()
   const { toastError } = useToast()
   const dfsMining = useDFSMiningContract()
-  const dfs = useDFSContract()
+  // const dfs = useDFSContract()
+  const aidfs = useAIDFSContract()
   const currentAskPriceAsNumber = nft?.marketData?.currentAskPrice ?? '0'
   const [onPresentBuyModal] = useModal(<BuyModal nftToBuy={nft} />)
   const [onPresentSellModal] = useModal(
@@ -129,7 +130,7 @@ const MainNFTCard: React.FC<React.PropsWithChildren<MainNFTCardProps>> = ({
   const { isMobile } = useMatchBreakpoints()
 
   useEffect(() => {
-    dfs.balanceOf(account).then((res) => {
+    aidfs.balanceOf(account).then((res) => {
       setDfsBalance(res)
     })
   }, [account])
@@ -141,9 +142,9 @@ const MainNFTCard: React.FC<React.PropsWithChildren<MainNFTCardProps>> = ({
       visible: false,
     })
     try {
-      const allowance = await dfs.allowance(account, dfsMining.address)
+      const allowance = await aidfs.allowance(account, dfsMining.address)
       if (allowance.eq(0)) {
-        const receipt = await dfs.approve(dfsMining.address, MaxUint256)
+        const receipt = await aidfs.approve(dfsMining.address, MaxUint256)
         await receipt.wait()
       }
       const receipt = await dfsMining.unstakeNFT(nft?.tokenId)

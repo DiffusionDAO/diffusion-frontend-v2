@@ -180,8 +180,8 @@ export default {
     97: DFS[ChainId.BSC_TESTNET].address,
   },
   aidfs: {
-    56: AIDFS_MAINNET,
-    97: AIDFS_TESTNET,
+    56: AIDFS_MAINNET.address,
+    97: AIDFS_TESTNET.address,
   },
   pair: {
     56: '0x706268f0df946041dc7c8CFFFd58fAA140dFE9D4',

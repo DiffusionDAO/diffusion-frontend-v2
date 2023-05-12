@@ -203,7 +203,7 @@ const Bond = () => {
         {!isMobile && (
           <OverviewPromptList>
             <OverviewPromptItem>{t('Get AIDFS at a discounted bond price')}</OverviewPromptItem>
-            <OverviewPromptItem>{t('DFS will be fully released linearly in 10 days after bonds purchase')}</OverviewPromptItem>
+            <OverviewPromptItem>{t('AIDFS will be fully released linearly in 10 days after bonds purchase')}</OverviewPromptItem>
             <OverviewPromptItem>
               {t(
                 'Unused bonds can be used to mint NFT',

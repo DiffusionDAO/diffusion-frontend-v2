@@ -34,7 +34,7 @@ const CollectionNfts: React.FC<React.PropsWithChildren<CollectionNftsProps>> = (
           </Text>
         </Flex>
       )}
-      {nfts.length > 0 ? (
+      {nfts?.length > 0 ? (
         <>
           <Grid
             gridGap="16px"

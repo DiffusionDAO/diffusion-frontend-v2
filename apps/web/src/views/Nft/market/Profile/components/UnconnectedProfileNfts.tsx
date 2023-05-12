@@ -10,14 +10,14 @@ const UserNfts: React.FC<{ nfts: NftToken[]; isLoading: boolean }> = ({ nfts, is
   return (
     <>
       {/* User has no NFTs */}
-      {nfts.length === 0 && !isLoading ? (
+      {nfts?.length === 0 && !isLoading ? (
         <Flex p="24px" flexDirection="column" alignItems="center">
           <Text pt="8px" bold>
             {t('No NFTs found')}
           </Text>
         </Flex>
       ) : // User has NFTs and data has been fetched
-      nfts.length > 0 ? (
+      nfts?.length > 0 ? (
         <Grid
           gridGap="16px"
           gridTemplateColumns={['1fr', 'repeat(2, 1fr)', 'repeat(3, 1fr)', null, 'repeat(4, 1fr)']}

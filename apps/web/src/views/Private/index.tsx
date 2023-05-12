@@ -9,6 +9,7 @@ import 'swiper/css/navigation'
 import { useTranslation } from '@pancakeswap/localization'
 import { useRouter } from 'next/router'
 import {
+  useAIDFSContract,
   useBondContract,
   useBondOldContract,
   useDFSContract,
@@ -88,7 +89,8 @@ const Private = () => {
   const dfsSavings = useDFSSavingsContract()
   const bond = useBondContract()
   const bondOld = useBondOldContract()
-  const dfs = useDFSContract()
+  // const dfs = useDFSContract()
+  const aidfs = useAIDFSContract()
   const hdfs = useHDFSContract()
   const hbond = useHBondContract()
 
@@ -98,7 +100,7 @@ const Private = () => {
   const refresh = async () => {
     setStakers(await dfsMining.getStakers())
 
-    const bondDFS = await dfs.balanceOf(bond.address)
+    const bondDFS = await aidfs.balanceOf(bond.address)
 
     const count = {
       s0: 0,
@@ -137,7 +139,7 @@ const Private = () => {
       totalPayout: await bond.totalPayout(),
       withdrawedSavingReward: await dfsSavings.withdrawedSavingReward(),
       withdrawedSocialReward: await dfsMining.withdrawedSocialReward(),
-      dfsRewardBalance: bondDFS.add(await dfs.balanceOf(bondOld.address)),
+      dfsRewardBalance: bondDFS.add(await aidfs.balanceOf(bondOld.address)),
     }
     const buyers = await bond.getBuyers()
     await Promise.all(
@@ -187,7 +189,7 @@ const Private = () => {
         }
       }),
     )
-    setDfsBalance(await dfs.balanceOf(account))
+    setDfsBalance(await aidfs.balanceOf(account))
     setTotalPower(await dfsMining.totalPower())
 
     setSavingInterestEpochLength(await dfsSavings.savingInterestEpochLength())

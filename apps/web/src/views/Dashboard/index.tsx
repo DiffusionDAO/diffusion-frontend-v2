@@ -4,7 +4,7 @@ import { makeStyles } from '@material-ui/core/styles'
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import useSWR from 'swr'
 import { Skeleton, useMatchBreakpoints } from '@pancakeswap/uikit'
-import { useBondContract, useBondOldContract, useDashboardContract, useDFSContract, useDFSMiningContract, useDFSSavingsContract, usePairContract } from 'hooks/useContract'
+import { useAIDFSContract, useBondContract, useBondOldContract, useDashboardContract, useDFSContract, useDFSMiningContract, useDFSSavingsContract, usePairContract } from 'hooks/useContract'
 import { getDFSAddress, getPairAddress, getUSDTAddress } from 'utils/addressHelpers'
 import { BigNumber } from '@ethersproject/bignumber'
 import { formatUnits, parseEther } from '@ethersproject/units'
@@ -119,7 +119,8 @@ const Dashboard = () => {
   const [holderLength, setHolderLength] = useState<number>(undefined)
   // const [data, setData] = useState<any>({})
   const pair = usePairContract(getPairAddress(chainId))
-  const dfs = useDFSContract()
+  // const dfs = useDFSContract()
+  const aidfs = useAIDFSContract()
   const dfsMining = useDFSMiningContract()
   const dfsSavings = useDFSSavingsContract()
   const bond = useBondContract()
@@ -176,46 +177,46 @@ const Dashboard = () => {
       setBondRewardWithdrawed(bondRewardWithdrawed)
       setTargetInflationRate(await bond.targetInflationRate())
     }
-    if (dfs) {
-      const foundationDFS = await dfs.balanceOf(foundation)
+    if (aidfs) {
+      const foundationDFS = await aidfs.balanceOf(foundation)
 
       setFoundationDFS(foundationDFS)
-      const elementaryUnusedMintAddressDfs = await dfs.balanceOf(elementaryUnusedMintAddress)
+      const elementaryUnusedMintAddressDfs = await aidfs.balanceOf(elementaryUnusedMintAddress)
       setElementaryUnusedMintAddressDfs(elementaryUnusedMintAddressDfs)
 
-      const advancedUnusedMintAddressDfs = await dfs.balanceOf(advancedUnusedMintAddress)
+      const advancedUnusedMintAddressDfs = await aidfs.balanceOf(advancedUnusedMintAddress)
       setAdvancedUnusedMintAddressDfs(advancedUnusedMintAddressDfs)
 
-      const elementaryMintAddressDfs = await dfs.balanceOf(elementaryMintAddress)
+      const elementaryMintAddressDfs = await aidfs.balanceOf(elementaryMintAddress)
       setElementaryMintAddressDfs(elementaryMintAddressDfs)
 
-      const advancedMintAddressDfs = await dfs.balanceOf(advancedMintAddress)
+      const advancedMintAddressDfs = await aidfs.balanceOf(advancedMintAddress)
       setAdvancedMintAddressDfs(advancedMintAddressDfs)
 
-      const bondDfs = (await dfs.balanceOf(bond.address)).add(await dfs.balanceOf(bondOld.address))
+      const bondDfs = (await aidfs.balanceOf(bond.address)).add(await aidfs.balanceOf(bondOld.address))
       setBondDfs(bondDfs)
 
-      const unstakeNFTDFS = await dfs.balanceOf(unstakeNFTAddress)
+      const unstakeNFTDFS = await aidfs.balanceOf(unstakeNFTAddress)
       setUnstakeNFTDFS(unstakeNFTDFS)
 
-      const nftMarketDestroyedDFS = await dfs.balanceOf(nftMarketDestroyAddress)
+      const nftMarketDestroyedDFS = await aidfs.balanceOf(nftMarketDestroyAddress)
       setNftMarketDestroyedDFS(nftMarketDestroyedDFS)
 
-      const daoDFS = (await Promise.all(dao.map(async (d) => dfs.balanceOf(d)))).reduce((accum, curr) => {
+      const daoDFS = (await Promise.all(dao.map(async (d) => aidfs.balanceOf(d)))).reduce((accum, curr) => {
         // eslint-disable-next-line no-return-assign, no-param-reassign
         accum = accum.add(curr)
         return accum
       }, BigNumber.from(0))
       setDaoDFS(daoDFS)
 
-      const genesisDFS = await dfs.balanceOf(await dfs.genesis())
+      const genesisDFS = await aidfs.balanceOf(await aidfs.genesis())
       setGenesisDFS(genesisDFS)
 
-      const dfsTotalSupply = await dfs.totalSupply()
+      const dfsTotalSupply = await aidfs.totalSupply()
       setDfsTotalSupply(dfsTotalSupply)
 
       const receiver = await bond.receiver()
-      const receiverDFS = await dfs.balanceOf(receiver)
+      const receiverDFS = await aidfs.balanceOf(receiver)
 
       const currentCirculationSupply = dfsTotalSupply
         .sub(genesisDFS)
@@ -236,10 +237,10 @@ const Dashboard = () => {
       const solitaryReserve = await dashboard.solitaryReserve()
       setSolitaryReserve(solitaryReserve)
 
-      const getHoldersLength = await dfs.getHoldersLength()
+      const getHoldersLength = await aidfs.getHoldersLength()
       setHolderLength(getHoldersLength)
 
-      const dfsTotalCalls = await dfs.totalCalls()
+      const dfsTotalCalls = await aidfs.totalCalls()
       setDfsTotalCalls(dfsTotalCalls)
     }
 

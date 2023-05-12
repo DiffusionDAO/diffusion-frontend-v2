@@ -50,6 +50,7 @@ import {
   getIDOAddress,
   getNFTDatabaseAddress,
   getDFSAddress,
+  getAIDFSAddress,
   getPDFSAddress,
   getMiningAddress,
   getSavingsAddress,
@@ -449,6 +450,9 @@ export const getDiffusionAICatContract = (signer?: Signer | Provider, chainId?: 
 }
 export const getDFSContract = (signer?: Signer | Provider, chainId?: number) => {
   return getContract({ abi: dfsAbi, address: getDFSAddress(chainId), signer })
+}
+export const getAIDFSContract = (signer?: Signer | Provider, chainId?: number) => {
+  return getContract({ abi: dfsAbi, address: getAIDFSAddress(chainId), signer })
 }
 export const getPDFSContract = (signer?: Signer | Provider, chainId?: number) => {
   return getContract({ abi: pdfsAbi, address: getPDFSAddress(chainId), signer })

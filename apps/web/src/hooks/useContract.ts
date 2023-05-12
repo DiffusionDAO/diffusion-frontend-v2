@@ -63,6 +63,7 @@ import {
   getMiningContract,
   getSavingsContract,
   getDFSContract,
+  getAIDFSContract,
   getPDFSContract,
   getIDOContract,
   getNFTDatabaseContract,
@@ -442,6 +443,11 @@ export const useDFSContract = (withSignerIfPossible = true) => {
   const { chainId } = useActiveChainId()
   const providerOrSigner = useProviderOrSigner(withSignerIfPossible)
   return useMemo(() => getDFSContract(providerOrSigner,chainId), [providerOrSigner])
+}
+export const useAIDFSContract = (withSignerIfPossible = true) => {
+  const { chainId } = useActiveChainId()
+  const providerOrSigner = useProviderOrSigner(withSignerIfPossible)
+  return useMemo(() => getAIDFSContract(providerOrSigner,chainId), [providerOrSigner])
 }
 export const usePDFSContract = (withSignerIfPossible = true) => {
   const { chainId } = useActiveChainId()

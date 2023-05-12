@@ -494,7 +494,7 @@ function NftProfilePage() {
   const handleSort = useCallback(
     (level: number) => {
       const filtered = unstakedNFTs.filter((nft: NftToken) => nft.collectionAddress === socialNFTAddress && nft.level === level)
-      if (filtered.length > 0) {
+      if (filtered?.length > 0) {
         setUnstakedNFTs(filtered)
       } else {
         setUnstakedNFTs(unstakedNFTs)
@@ -683,7 +683,7 @@ function NftProfilePage() {
           }
         })
         setSelectedNFTs(toBeComposed)
-        setSelectedCount(toBeComposed.length)
+        setSelectedCount(toBeComposed?.length)
       } else if (level === 6) {
         setNoteContent({
           title: t('Note'),
@@ -706,12 +706,12 @@ function NftProfilePage() {
           }
         })
         setSelectedNFTs(toBeComposed)
-        setSelectedCount(toBeComposed.length)
+        setSelectedCount(toBeComposed?.length)
       }
     } else if (option === 'stake') {
       if (nft.collectionAddress === socialNFT.address) {
         nft.selected = !nft.selected
-        setSelectedCount(selectedNFTs?.filter((n) => n.selected).length)
+        setSelectedCount(selectedNFTs?.filter((n) => n.selected)?.length)
       }
     }
   }
