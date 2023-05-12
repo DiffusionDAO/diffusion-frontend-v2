@@ -232,19 +232,17 @@ const Dashboard = () => {
 
       setSolitaryReserve(solitaryReserve)
 
-      // const getHoldersLength = await aidfs.getHoldersLength()
-      // setHolderLength(getHoldersLength)
-
-      // const dfsTotalCalls = await aidfs.totalCalls()
-      // setDfsTotalCalls(dfsTotalCalls)
-
       const receiver = await bond.receiver()
-
       const receiverDFS = await aidfs.balanceOf(receiver)
 
-      // const genesisDFS = await aidfs.balanceOf(await aidfs.genesis())
-      // setGenesisDFS(genesisDFS)
-      // console.log("genesisDFS:", genesisDFS)
+      const getHoldersLength = await dashboard.holderLength()
+      setHolderLength(getHoldersLength)
+
+      const dfsTotalCalls = await dashboard.dfsTotalCalls()
+      setDfsTotalCalls(dfsTotalCalls)
+
+      const genesisDFS = await dashboard.genesisDFS()
+      setGenesisDFS(genesisDFS)
 
       const currentCirculationSupply = dfsTotalSupply
         // .sub(genesisDFS)
