@@ -8,8 +8,8 @@ export const bsc: Chain = {
   name: 'Binance Smart Chain',
   network: 'bsc',
   rpcUrls: {
-    public: 'https://bsc-dataseed1.defibit.io', //'https://rpc.diffusiondao.org',
-    default: 'https://bsc-dataseed1.defibit.io',
+    public: 'https://bsc-dataseed2.defibit.io', //'https://rpc.diffusiondao.org',
+    default: 'https://bsc-dataseed2.defibit.io',
   },
   blockExplorers: {
     default: bscExplorer,
